@@ -16,6 +16,8 @@ simin.signals = struct('values',[zeros(Tstep/Te,1); saturation_limit*ones(1+(Ten
  
 sim('ce1_1');
  
+figure('Name','Exercise CE-1 1.1 Step response','NumberTitle','off');
+
 subplot(2,1,1);
 plot(simout.Time, simout.Data, 'b');
 hold on;
