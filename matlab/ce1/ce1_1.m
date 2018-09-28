@@ -8,13 +8,10 @@ Tstep = 1;
  
 saturation_limit = 0.5;
  
-%simin.signals.values = [zeros(1,Tstep/Te) saturation_limit*ones(1,1+(Tend-Tstep)/Te)]';
-%simin.time = (0:Te:Tend)';
- 
 simin = struct('signals',zeros(1+Tend/Te,1), 'time',(0:Te:Tend)');
 simin.signals = struct('values',[zeros(Tstep/Te,1); saturation_limit*ones(1+(Tend-Tstep)/Te,1)]);
  
-sim('ce1_1');
+sim('ce1');
  
 figure('Name','Exercise CE-1 1.1 Step response','NumberTitle','off');
 
@@ -28,7 +25,7 @@ xlabel 'Time [s]';
 legend('response','step');
  
 simin.signals.values = [saturation_limit zeros(1,Tend/Te)]';
-sim('ce1_1')
+sim('ce1')
  
 subplot(2,1,2);
 plot(simout.Time, simout.Data, 'color', [0, 0.5, 0]);
