@@ -17,12 +17,39 @@
 
 \lstset{frame=single,keepspaces=true,captionpos=b}
 
-\title{System Identification (ME421) - EPFL}
-\subtitle{First Report}
+\title{System Identification (ME421) at EPFL}
+\subtitle{CE-1: Nonparametric Methods}
 \author{\textsc{Julia Krottenthaler} \and \textsc{Arne Sachtler}}
 \date{\today}
 
 \begin{document}
 \maketitle
+
+\section{Step Response}
+
+Figure~\ref{fig:testmodel} shows the modelled system, which will be used for the system identification exercises.
+\textcolor{red}{TODO: is this a reasonable choice question}
+Figure~\ref{fig:responses} shows the step and impulse response for the system. On the left hand side the noise is included, the right hand side shows the responses without noise.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=4cm]{figures/systemmodel.png}
+	\caption{Simulink model of the test system}\label{fig:testmodel}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/noisy_responses.pdf}
+		\subcaption{Noisy responses}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/noisefree.pdf}
+		\subcaption{Responses without noise}
+	\end{subfigure}
+	\caption{Step and impulse responses of the test system with and without noise.}\label{fig:responses}
+\end{figure}
+
 
 \end{document}

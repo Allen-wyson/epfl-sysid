@@ -1,5 +1,4 @@
 clc;
-clear all;
 close all;
  
 Te = 0.5;
@@ -22,7 +21,7 @@ plot(simin.time, simin.signals.values, 'r');
 grid;
 title('Step Response');
 xlabel 'Time [s]';
-legend('response','step');
+legend('step response','input step');
  
 simin.signals.values = [saturation_limit zeros(1,Tend/Te)]';
 sim('ce1')
@@ -34,5 +33,5 @@ plot(simin.time, simin.signals.values,'color', [1, 0.5, 0]);
 grid;
 title('Impulse Response');
 xlabel 'Time [s]';
-legend('response','impulse');
+legend('impulse response','input impulse');
 
