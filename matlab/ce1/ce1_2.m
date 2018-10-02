@@ -9,3 +9,13 @@ size(phi)
 figure
 stem(h, phi)
 grid
+
+figure
+x= (0:0.1:2*pi)';
+y = sin(x-pi/2);
+stem(y);
+grid
+[phi, h] = intcor(y, y);
+figure
+stem(h, phi)
+grid
