@@ -15,7 +15,12 @@
 \usepackage{libertine}
 \usepackage{longtable}
 
-\lstset{frame=single,keepspaces=true,captionpos=b}
+\lstset{backgroundcolor=\color{white},
+	frame=L,
+	keepspaces=true,
+	captionpos=b,
+	keywordstyle=\color{blue},
+	language=matlab}
 
 \title{System Identification (ME421) at EPFL}
 \subtitle{CE-1: Nonparametric Methods}
@@ -55,9 +60,26 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 
 \section{Auto Correlation of a PRBS signal}
 
+In order to compute the cross-correlation of two discrete-time signals $u(k)$ and $y(k)$, we use 
+\begin{equation}
+	R_{uy}(h) = \frac{1}{M} \sum\limits_{k=0}^{M-1} u(k)y(k-h)\, .
+\end{equation}
+We assume two equal-length vectors for the signals $u$ and $y$. Let the length of the input signals be $N$, we choose the following interval for $h$
+\begin{equation}
+	h \in \{-H, \dots, -1, 0, 1, \dots, H\}\text{ , where } H = \left\lceil \frac{N}{2} \right\rceil \, .
+\end{equation}
+Using these definitions the cross-correlation can be computed in MATLAB using the code snippet shown in Listing~\ref{lst:corr}.
+
+\begin{lstlisting}[caption={Computing a discrete-time cross correlation of the signal u and y in matlab},label={lst:corr}]
+for i = 1:(2*H+1)
+    R(i) = sum(u .* circshift(y, -h(i)));
+end
+\end{lstlisting}
+
+In order to validate our implementation of the cross-correlation function, we used it to compute the autocorrelation two different test signals. 
 Figure~\ref{fig:autocorr} shows the autocorrelation function of two different types of signals. 
 On the left hand side (Figure~\ref{fig:autocorrPRBS}) there is a PRBS signal (length of the shift register is 4 and number of periods is 2) and its corresponding autocorrelation function. 
-In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) displays a sinusiodal signal and its autocorrelation function.  
+In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) displays a sinusoidal signal and its autocorrelation function.  
 
 \begin{figure}[h]
 	\centering
