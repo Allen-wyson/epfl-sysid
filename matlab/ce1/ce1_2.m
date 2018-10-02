@@ -1,21 +1,30 @@
 close all;
-u = prbs(4, 2);
-size(u)
+clear all;
+clc;
 
-stem(u)
+%% Calculation
+
+%u = prbs(4, 2);
+x = [0:0.1:2*pi]';
+u = sin(x);
 
 [phi, h] = intcor(u, u);
-size(phi)
-figure
-stem(h, phi)
-grid
 
-figure
-x= (0:0.1:2*pi)';
-y = sin(x-pi/2);
-stem(y);
-grid
-[phi, h] = intcor(y, y);
-figure
-stem(h, phi)
+
+%% Plot
+
+figure('Name','Exercise CE-1 1.2 Autocorrelation Function','NumberTitle','off')
+
+subplot(2,1,1);
+stem(u,'b');
+hold on;
+ylim([-1.2 1.2]);
+title('Sinusoidal signal');
+
+subplot(2,1,2);
+stem(h, phi,'b');
+hold on;
+%ylim([-inf inf]);
+title('Autocorrelation of sinusoidal signal');
+
 grid
