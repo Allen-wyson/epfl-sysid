@@ -1,10 +1,10 @@
 close all;
-a = prbs(6, 1);
-size(a)
+u = prbs(4, 2);
+size(u)
 
-stem(a)
+stem(u)
 
-[phi, h] = intcor(a, a);
+[phi, h] = intcor(u, u);
 size(phi)
 figure
 stem(h, phi)
