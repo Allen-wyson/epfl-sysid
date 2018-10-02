@@ -51,5 +51,26 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 	\caption{Step and impulse responses of the test system with and without noise.}\label{fig:responses}
 \end{figure}
 
+\newpage
+
+\section{Auto Correlation of a PRBS signal}
+
+Figure~\ref{fig:autocorr} shows the autocorrelation function of two different types of signals. On the left hand side (Figure~\ref{fig:autocorrPRBS}) there is a PRBS signal (length of the shift register is 4 and number of periods is 2) and its corresponding autocorrelation function. In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) displays a sinusiodal signal and its autocorrelation function.  
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/Autocorrelation_PBRS.png}
+		\subcaption{PRBS signal}
+		\label{fig:autocorrPRBS}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/Autocorrelation_Sinus.png}
+		\subcaption{Sinus signal}
+		\label{fig:autocorrSINUS}
+	\end{subfigure}
+	\caption{Two signals and their corresponding autocorrelation}\label{fig:autocorr}
+\end{figure}
+
 
 \end{document}
