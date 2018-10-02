@@ -5,8 +5,8 @@ clc;
 %% Calculation
 
 u = prbs(4, 2);
-% x = [0:0.1:2*pi]';
-% u = sin(x);
+x = [0:0.1:2*pi]';
+%u = sin(x);
 
 [phi, h] = intcor(u, u);
 

@@ -10,6 +10,7 @@ function [phi, h] = intcor(u, y)
     for i = 1:M
         phi(i) = sum(u .* circshift(y, -h(i)));
     end
+    
     phi = 1/len * phi;
 end
 
