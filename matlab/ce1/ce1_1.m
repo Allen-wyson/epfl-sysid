@@ -1,11 +1,7 @@
 clc;
 close all;
  
-Te = 0.5;
-Tend = 100;
-Tstep = 1;
- 
-saturation_limit = 0.5;
+init
  
 simin = struct('signals',zeros(1+Tend/Te,1), 'time',(0:Te:Tend)');
 simin.signals = struct('values',[zeros(Tstep/Te,1); saturation_limit*ones(1+(Tend-Tstep)/Te,1)]);
