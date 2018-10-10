@@ -25,8 +25,8 @@ legend('Input', 'Output')
 figure
 trunc = 150;
 input = input(:,1:trunc);
-impulse_response = pinv(input) * output;
-stairs(t(1:trunc), impulse_response(1:trunc));
+impulse_response = input\output;
+stairs(t(1:trunc), impulse_response);
 grid
 
 
