@@ -103,14 +103,21 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 
 \begin{figure}[h]
 	\centering
+	\includegraphics[height=5.5cm]{figures/input_output.png}
+	\caption{Random input signal and output of the system }
+	\label{fig:inout}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=\textwidth]{figures/input_output.png}
-		\subcaption{Random input signal and output of the system }
-		\label{fig:inout}
+		\includegraphics[width=\textwidth]{figures/original_impulse_response.png}
+		\subcaption{Original impulse response }
+		\label{fig:originalimpulse}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/impulse_response.png}
-		\subcaption{Comparison of the two impulse responses}
+		\subcaption{Impulse response after removing equations}
 		\label{fig:impulseresponse}
 	\end{subfigure}
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}
