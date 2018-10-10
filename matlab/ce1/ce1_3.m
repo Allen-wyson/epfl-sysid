@@ -27,16 +27,19 @@ t = (0:Te:(N-1)*Te)';
 simin.signals.values = signal;
 simin.time = t;
 
-sim('ce1_1');
-%sim('ce1');
+%sim('ce1_1');
+sim('ce1');
 
 output = simout.Data;
 
 
 %% Reducing the number of equations
 
+% original number of equations:
+% trunc = 500; 
 trunc = 150;
 input = input(:,1:trunc);
+
 impulse_response = pinv(input) * output;
 
 
@@ -52,6 +55,8 @@ xlabel('Time (seconds)');
 
 figure;
 stairs(t(1:trunc), impulse_response(1:trunc), 'b');
+%hold on;
+%plot(t(1:trunc), impulse_response(1:trunc), 'g');
 grid;
 
 hold on; 
@@ -61,6 +66,7 @@ impulse(Te*sys, 'r');
 
 title('Impulse response');
 legend('Impulse response by deconvolution method', 'True impulse response');
+
 
 
 
