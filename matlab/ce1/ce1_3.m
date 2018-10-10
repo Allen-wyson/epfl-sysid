@@ -20,17 +20,19 @@ tmp(1,1) = signal(1,1);
 input = toeplitz(signal, tmp);
 
 
-%% Simulation 
+%% Simulation and original impulse response
 
 t = (0:Te:(N-1)*Te)'; 
 
 simin.signals.values = signal;
 simin.time = t;
 
-%sim('ce1_1');
-sim('ce1');
+sim('ce1_1');
+%sim('ce1');
 
 output = simout.Data;
+
+impulse_response1 = inv(input)* output;
 
 
 %% Reducing the number of equations
@@ -52,18 +54,25 @@ legend('Input','Output');
 title('Signal/Input and Output');
 xlabel('Time (seconds)');
 
-
+% original impulse response
 figure;
-stairs(t(1:trunc), impulse_response(1:trunc), 'b');
-%hold on;
-%plot(t(1:trunc), impulse_response(1:trunc), 'g');
+stairs(t, impulse_response1, 'b');
 grid;
-
 hold on; 
 sys = tf(1, [1, 0.4, 4.3, 0.85, 1]);
 sys = c2d(sys, Te, 'zoh');
 impulse(Te*sys, 'r');
+title('Original impulse response');
+legend('Original impulse response by deconvolution method', 'True impulse response');
 
+% impulse response
+figure;
+stairs(t(1:trunc), impulse_response(1:trunc), 'b');
+grid;
+hold on; 
+sys = tf(1, [1, 0.4, 4.3, 0.85, 1]);
+sys = c2d(sys, Te, 'zoh');
+impulse(Te*sys, 'r');
 title('Impulse response');
 legend('Impulse response by deconvolution method', 'True impulse response');
 
