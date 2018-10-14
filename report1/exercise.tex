@@ -96,65 +96,57 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 	\caption{Two signals and their corresponding autocorrelation function}\label{fig:autocorr}
 \end{figure}
 
-
 \newpage
-
-\section{Impulse response by deconvolution method}
-
-In this excercise the deconvolution method is used in order to calculate the impulse response. 
-
-
+\section{Impulse Response using the Deconvolution Method}
+In this exercise the deconvolution method is used in order to estimate the impulse response of a system.
+We use digital random white noise signal, feed it to the model and record the system's response.
 As an input signal we generate a random signal with the \verb|rand| command (Figure~\ref{fig:inout}).
-Since this command returns random numbers in the interval $[0,1]$, we substract $0.5$ so that the random signal does not exceed the saturation values. 
+In order to create the random signal we use \verb|rand| and squeeze the output to the $[-0.5, 0.5]$ interval.
+Figure~\ref{fig:inout} shows the input and the response of the model.
+In total, we generate $200s$ of white noise and run the simulation.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[height=5.5cm]{figures/input_output.png}
-	\caption{Random input signal and output of the system }
+	\includegraphics[height=5.5cm]{figures/input_output.pdf}
+	\caption{Random input signal and output of the system}
 	\label{fig:inout}
 \end{figure}
-
-
-Afterwards we can indentify the dicrete impulse response using the convolution relation:
-
+Afterwards we can identify the discrete impulse response using the convolution relation
 \begin{equation}
-	y(k) = \sum\limits_{j=0}^{k} g(j)y(k-j) \quad k=0,1,2,.. 
+	y(k) = \sum\limits_{j=0}^{k} g(j)u(k-j) \text{ for } k=0,1,2,.. 
 \end{equation}
-
-or in a matricial form:
+or in a matrix form
 \begin{equation}
-	Y = U \Theta.
-\end{equation} 
-
-
-$\Theta$ can then be calculated by 
+	Y = U \Theta\, .
+\end{equation}
+Here, $U$ is an asymmetric (lower) triangular Toeplitz matrix.
+Then, $\Theta$ can then be calculated using
 \begin{equation}
 	\Theta = U^{-1} Y.
 \end{equation}
+However, this approach does not lead to a good solution as the matrix $U$ is poorly conditioned and very close to singular.
+Therefore, the inversion is highly numerically unstable and we don't get a proper result for the discrete impulse response as shown in Figure~\ref{fig:originalimpulse}.
 
-As $U$ is an asymmetric Toeplitz maxtrix, $\Theta$ cannot be computed and the obtained result does not show the impulse response (Figure~\ref{fig:originalimpulse}).
-
-
-In order to fix the numerical problem, we assume $ g(k) = 0 $ for $ k \geq K $ and we obtain $ Y = U_{K} \Theta_{K}$ by removing the last $N-K$ columns of $U$ and the last $N-K$ rows of $\Theta$. 
-This equation can be solved in the least squares sense using the pseudo inverse of $U_{K}$
-
+In order to fix the numerical problem, we shorten the total length of the impulse response by assuming $g(k) = 0$ for $k \geq K$ and we obtain $Y = U_{K} \Theta_{K}$ by removing the last $N-K$ columns of $U$ and the last $N-K$ rows of $\Theta$. 
+This equation can be solved in the least squares sense using the Moore-Penrose pseudo inverse $U_{K}^+$ of $U_{K}$
 \begin{equation}
-	\Theta_{K} = (U^{T}_{K} U_{K})^{-1} U^{T}_{K} Y.
+	\Theta_{K} = (U^{T}_{K} U_{K})^{-1} U^{T}_{K} Y = U_{K}^{+} Y.
 \end{equation}
-
-As the true impuse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:originalimpulse}. The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
-
+In MATLAB we can compute the least squares solution by simply using the backslash operator.
+As the true impulse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:impulseresponse}. The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
+Note that we of course do not know the length of the impulse response for arbitrary systems to be identified. 
+Here, other methods to determine the main time constants or systematic evaluation of different target lengths $K$ must be employed.
 
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=\textwidth]{figures/original_impulse_response.png}
-		\subcaption{Original impulse response }
+	\begin{subfigure}{0.8\textwidth}
+		\includegraphics[width=\textwidth]{figures/original_impulse_response.pdf}
+		\subcaption{Poor estimate of the impulse response due to the inversion of the poorly conditioned input matrix.}
 		\label{fig:originalimpulse}
 	\end{subfigure}
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=\textwidth]{figures/impulse_response.png}
-		\subcaption{Impulse response after removing equations}
+	\begin{subfigure}{0.8\textwidth}
+		\includegraphics[width=\textwidth]{figures/impulse_response.pdf}
+		\subcaption{Better estimate of the impulse response by constraining the length of the discrete finite impulse response.}
 		\label{fig:impulseresponse}
 	\end{subfigure}
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}

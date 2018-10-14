@@ -5,7 +5,7 @@ init;
 
 %% Input signal: random signal
 
-T = 250;
+T = 200;
 Te = 0.5;
 Tend = T-Te;
 N = T/Te;
@@ -46,9 +46,9 @@ impulse_response = input \ output;
 
 %% Plots 
 
-plot(t, signal, 'r');
+stairs(t, signal, 'r');
 hold on;
-plot(t, output, 'b');
+stairs(t, output, 'b');
 legend('Input','Output');
 title('Signal/Input and Output');
 xlabel('Time (seconds)');
