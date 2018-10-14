@@ -101,12 +101,49 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 
 \section{Impulse response by deconvolution method}
 
+In this excercise the deconvolution method is used in order to calculate the impulse response. 
+
+
+As an input signal we generate a random signal with the \verb|rand| command (Figure~\ref{fig:inout}).
+Since this command returns random numbers in the interval $[0,1]$, we substract $0.5$ so that the random signal does not exceed the saturation values. 
+
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/input_output.png}
 	\caption{Random input signal and output of the system }
 	\label{fig:inout}
 \end{figure}
+
+
+Afterwards we can indentify the dicrete impulse response using the convolution relation:
+
+\begin{equation}
+	y(k) = \sum\limits_{j=0}^{k} g(j)y(k-j) \quad k=0,1,2,.. 
+\end{equation}
+
+or in a matricial form:
+\begin{equation}
+	Y = U \Theta.
+\end{equation} 
+
+
+$\Theta$ can then be calculated by 
+\begin{equation}
+	\Theta = U^{-1} Y.
+\end{equation}
+
+As $U$ is an asymmetric Toeplitz maxtrix, $\Theta$ cannot be computed and the obtained result does not show the impulse response (Figure~\ref{fig:originalimpulse}).
+
+
+In order to fix the numerical problem, we assume $ g(k) = 0 $ for $ k \geq K $ and we obtain $ Y = U_{K} \Theta_{K}$ by removing the last $N-K$ columns of $U$ and the last $N-K$ rows of $\Theta$. 
+This equation can be solved in the least squares sense using the pseudo inverse of $U_{K}$
+
+\begin{equation}
+	\Theta_{K} = (U^{T}_{K} U_{K})^{-1} U^{T}_{K} Y.
+\end{equation}
+
+As the true impuse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:originalimpulse}. The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
+
 
 \begin{figure}[h]
 	\centering
