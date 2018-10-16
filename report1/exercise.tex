@@ -22,13 +22,14 @@
 	keywordstyle=\color{blue},
 	language=matlab}
 
-\title{System Identification (ME421) at EPFL}
+\title{System Identification (ME421)}
 \subtitle{CE-1: Nonparametric Methods}
 \author{\textsc{Julia Krottenthaler} \and \textsc{Arne Sachtler}}
-\date{\today}
+\date{Fall 2018 - EPFL}
 
 \begin{document}
 \maketitle
+\tableofcontents
 
 \section{Step Response}
 
@@ -139,17 +140,19 @@ Here, other methods to determine the main time constants or systematic evaluatio
 
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}{0.8\textwidth}
+	\begin{subfigure}{.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/original_impulse_response.pdf}
 		\subcaption{Poor estimate of the impulse response due to the inversion of the poorly conditioned input matrix.}
 		\label{fig:originalimpulse}
 	\end{subfigure}
-	\begin{subfigure}{0.8\textwidth}
+	\begin{subfigure}{.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/impulse_response.pdf}
 		\subcaption{Better estimate of the impulse response by constraining the length of the discrete finite impulse response.}
 		\label{fig:impulseresponse}
 	\end{subfigure}
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}
 \end{figure}
+
+\section{Impulse Response by Correlation Approach}
 
 \end{document}
