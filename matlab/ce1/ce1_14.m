@@ -77,7 +77,7 @@ title 'Resulting impulse response';
 %tk = t(1:1:K);
 
 
-%% Impulse response with xcorr
+%% Auto- and cross correlation with xcorr
 
 [auto_corr_xcorr, h] = xcorr(Uprbs, Uprbs,'biased');
 [cross_corr_xcorr, h1] = xcorr(y,Uprbs,'biased');
@@ -91,6 +91,7 @@ title 'Crosscorrelation with xcorr';
 
 
 %% Truncate xcorr
+
 zero_index1 = h(end)+1;
 h_trunc = h(zero_index1:zero_index1+K-1);
 
