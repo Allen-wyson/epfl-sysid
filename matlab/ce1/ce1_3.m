@@ -36,7 +36,7 @@ impulse_response1 = inv(input)* output;
 trunc = floor(50/Te);
 input = input(:,1:trunc);
 
-impulse_response = input \ output;
+impulse_response = estimate_impulse_response_numdec(signal, output, trunc);
 %% Plots 
 
 stairs(t, signal, 'r');
