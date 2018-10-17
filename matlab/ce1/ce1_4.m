@@ -1,6 +1,5 @@
 %% Init
 close all;
-
 init;
 
 %% Input signal
@@ -47,6 +46,13 @@ g2 = estimate_impulse_response_corr(Uprbs, y, K, 'intcor_simple');
 
 t_g = t(1:K);
 
+plot(t, Uprbs);
+title 'PRBS signal'
+xlabel 'Time [s]'
+ylabel 'Amplitude'
+grid;
+
+figure
 stem(ha, auto_corr);
 title 'Autocorrelation of input signal (intcor)'
 xlabel 'Time [s]'
@@ -70,13 +76,6 @@ title 'Resulting impulse response (intcor)';
 xlabel 'Time [s]'
 ylabel 'Amplitude'
 
-
-
-%Ruu = toeplitz(u_corr(n_zero:n_zero+K-1),u_corr(n_zero:n_zero+K-1));
-%g = Ruu\cross_corr(n_zero:n_zero+K-1);
-%tk = t(1:1:K);
-
-
 %% Auto- and cross correlation with xcorr
 
 [auto_corr_xcorr, h] = xcorr(Uprbs, Uprbs,'biased');
@@ -93,6 +92,24 @@ xlabel 'Time [s]'
 ylabel 'Amplitude'
 title 'Crosscorrelation with xcorr';
 
+%% Both correlation signals
+figure;
+hold on
+stem(h, auto_corr_xcorr, 'b');
+stem(ha, auto_corr, 'r')
+ylabel 'Time [s]'
+xlabel 'Amplitude'
+grid
+legend('intcor', 'xcorr')
+
+figure;
+hold on
+stem(h, cross_corr_xcorr)
+stem(ha, cross_corr, 'r');
+ylabel 'Time [s]'
+xlabel 'Amplitude'
+grid
+legend('intcor', 'xcorr')
 
 %% Truncate xcorr
 

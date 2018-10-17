@@ -15,12 +15,27 @@
 \usepackage{libertine}
 \usepackage{longtable}
 
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \lstset{backgroundcolor=\color{white},
-	frame=L,
-	keepspaces=true,
-	captionpos=b,
-	keywordstyle=\color{blue},
-	language=matlab}
+  keepspaces=true,
+  captionpos=b,
+  keywordstyle=\color{blue},
+  language=matlab,
+  stringstyle=\color{mymauve},
+  tabsize=2,
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray},
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={input},            % if you want to delete keywords from the given language
+}
+
+\newcommand{\matlabcode}[3]{\begin{figure}[h]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
 
 \title{System Identification (ME421)}
 \subtitle{CE-1: Nonparametric Methods}
@@ -29,7 +44,7 @@
 
 \begin{document}
 \maketitle
-\tableofcontents
+%\tableofcontents
 
 \section{Step Response}
 
@@ -71,11 +86,7 @@ We assume two equal-length vectors for the signals $u$ and $y$. Let the length o
 \end{equation}
 Using these definitions the cross-correlation can be computed in MATLAB using the code snippet shown in Listing~\ref{lst:corr}.
 
-\begin{lstlisting}[caption={Computing a discrete-time cross correlation of the signal u and y in matlab},label={lst:corr}]
-for i = 1:(2*H+1)
-    R(i) = sum(u .* circshift(y, -h(i)));
-end
-\end{lstlisting}
+\matlabcode{../matlab/ce1/intcor.m}{Computing a discrete-time cross correlation of the signal u and y in matlab}{lst:corr}
 
 In order to validate our implementation of the cross-correlation function, we used it to compute the autocorrelation two different test signals. 
 Figure~\ref{fig:autocorr} shows the autocorrelation function of two different types of signals. 
@@ -97,7 +108,6 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 	\caption{Two signals and their corresponding autocorrelation function}\label{fig:autocorr}
 \end{figure}
 
-\newpage
 \section{Impulse Response using the Deconvolution Method}
 In this exercise the deconvolution method is used in order to estimate the impulse response of a system.
 We use digital random white noise signal, feed it to the model and record the system's response.
@@ -137,6 +147,9 @@ In MATLAB we can compute the least squares solution by simply using the backslas
 As the true impulse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:impulseresponse}. The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
 Note that we of course do not know the length of the impulse response for arbitrary systems to be identified. 
 Here, other methods to determine the main time constants or systematic evaluation of different target lengths $K$ must be employed.
+Listing~\ref{lst:numdec} shows our implementation in MATLAB.
+
+\matlabcode{../matlab/ce1/estimate_impulse_response_numdec.m}{Estimator of the impulse response via numerical deconvolution in MATLAB.}{lst:numdec}
 
 \begin{figure}[h]
 	\centering
@@ -153,6 +166,31 @@ Here, other methods to determine the main time constants or systematic evaluatio
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}
 \end{figure}
 
+\textcolor{red}{Give 2-norm of error.}
+
 \section{Impulse Response by Correlation Approach}
+We generate a PRBS signal with $4$ periods in a $7$bit shift register model.
+Afterwards, the PRBS signal is applied to the system.
+First we compute the cross-correlation between the input and the output signal $R_{uy}(h)$ and the auto-correlation of the input signal $R_{uu}(h)$ using the previously implemented \texttt{intcor} function and MATLAB's \texttt{xcorr} function. The results are shown in Figure~\ref{fig:cross_correlations}.
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.7\textwidth}
+		\includegraphics[width=\textwidth]{figures/ac.pdf}
+		\subcaption{Auto-correlation $R_{uu}(h)$}
+		\label{fig:cc_ac}
+	\end{subfigure}
+	\begin{subfigure}{0.7\textwidth}
+		\includegraphics[width=\textwidth]{figures/cc.pdf}
+		\subcaption{Cross-correlation $R_{yu}(h)$, (zoomed and truncated)}
+		\label{fig:cc_cc}
+	\end{subfigure}
+	\caption{Correlation signals computed from input and output signal.}\label{fig:cross_correlations}
+\end{figure}
+The function \texttt{intcor} and \texttt{xcorr} yield the same results at $0$, but different results for the remaining values on the time-axis.
+Generally, if $N$ is the signal length, \texttt{intcor} provides a correlation signal with a length of $N+1$ for $N$ even and $N+3$ for $N$ odd.
+MATLAB's implementation yields a significantly longer signal and the correlation sum is weighted by some function of $h$.
+Because of that, for $h\neq0$ MATLAB's \texttt{xcorr} shows a non-constant value for the PRBS auto-correlation while \texttt{intcor} does.
+
+\matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}{Estimator of the impulse response via the correlation approach.}{lst:corr_approach}
 
 \end{document}
