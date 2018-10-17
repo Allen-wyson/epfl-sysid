@@ -1,11 +1,7 @@
 %% Init
-
-clear all; 
-clc;
 close all;
 
 init;
-
 
 %% Input signal
 
@@ -52,13 +48,13 @@ g2 = cross_corr_trunc ./ auto_corr_trunc(1);
 
 t_g = t(1:K);
 
-stem(ha_trunc, auto_corr_trunc);
-title 'Autocorrelation of input signal'
+stem(ha, auto_corr);
+title 'Autocorrelation of input signal (intcor)'
 grid;
 
 figure;
-stem(ha_trunc, cross_corr_trunc);
-title 'Cross correlation of input and output';
+stem(ha, cross_corr);
+title 'Cross correlation of input and output (intcor)';
 grid;
 
 figure;
@@ -67,7 +63,7 @@ hold on;
 stairs(t_g, g2);
 legend('Numerical deconvolution (with R_{uu}(h-j))', 'Simplified version for white noise (with R_{uu}(0))');
 grid;
-title 'Resulting impulse response';
+title 'Resulting impulse response (intcor)';
 
 
 
@@ -123,7 +119,7 @@ hold on;
 stairs(t_g, g2_xcorr);
 legend('Numerical deconvolution (with R_{uu}(h-j)) with xcorr', 'Simplified version for white noise (with R_{uu}(0)) with xcorr');
 grid;
-title 'Resulting impulse response';
+title 'Resulting impulse response (xcorr)';
 
 
 %% Comparison 
@@ -132,5 +128,9 @@ figure;
 stairs(t_g, g_xcorr);
 hold on;
 stairs(t_g, g);
-legend('Intcorr', 'xcorr');
+stairs(t_g, g2);
+stairs(t_g, g2_xcorr)
+grid
+legend('num dec intcor', 'num dec xcorr', 'simple intcor', 'simple xcorr');
+title 'Comparison of the Approaches'
 
