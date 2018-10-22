@@ -47,6 +47,7 @@ title('Signal/Input and Output');
 xlabel('Time (seconds)');
 grid;
 
+t_trunc = t(1:trunc);
 % original impulse response
 figure;
 stairs(t, impulse_response1, 'b');
@@ -54,17 +55,22 @@ grid;
 hold on; 
 sys = tf(1, [1, 0.4, 4.3, 0.85, 1]);
 sys = c2d(sys, Te, 'zoh');
-impulse(Te*sys, 'r');
-title('Original impulse response');
-legend('Original impulse response by deconvolution method', 'True impulse response');
+g = impulse(Te*sys, 'r');
+stairs(t(1:size(g,1)), g, 'r');
+title('Erroneous result due to num. instability');
+legend('impulse response by deconvolution method', 'True impulse response');
 
 % impulse response
 figure;
-stairs(t(1:trunc), impulse_response(1:trunc), 'b');
+stairs(t_trunc, impulse_response, 'b');
 grid;
 hold on; 
-sys = tf(1, [1, 0.4, 4.3, 0.85, 1]);
-sys = c2d(sys, Te, 'zoh');
-impulse(Te*sys, 'r');
+g_trunc = g(1:trunc);
+stairs(t_trunc, g_trunc, 'r');
 title('Impulse response');
 legend('Impulse response by deconvolution method', 'True impulse response');
+
+size(g_trunc)
+err = norm(g_trunc - impulse_response);
+disp(sprintf("L2 norm of error: %.2f", err))
+

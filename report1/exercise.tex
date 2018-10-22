@@ -44,7 +44,7 @@
 
 \begin{document}
 \maketitle
-%\tableofcontents
+\tableofcontents
 
 \section{Step Response}
 
@@ -71,8 +71,6 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 	\end{subfigure}
 	\caption{Step and impulse responses of the test system with and without noise.}\label{fig:responses}
 \end{figure}
-
-\newpage
 
 \section{Auto Correlation of a PRBS signal}
 
@@ -108,7 +106,7 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 	\caption{Two signals and their corresponding autocorrelation function}\label{fig:autocorr}
 \end{figure}
 
-\section{Impulse Response using the Deconvolution Method}
+\section{Impulse Response using the Deconvolution Method}\label{section:numdec}
 In this exercise the deconvolution method is used in order to estimate the impulse response of a system.
 We use digital random white noise signal, feed it to the model and record the system's response.
 As an input signal we generate a random signal with the \verb|rand| command (Figure~\ref{fig:inout}).
@@ -165,8 +163,11 @@ Listing~\ref{lst:numdec} shows our implementation in MATLAB.
 	\end{subfigure}
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}
 \end{figure}
-
-\textcolor{red}{Give 2-norm of error.}
+\noindent We get a 2-norm of the error vector as
+\begin{equation}\label{eq:2-norm}
+	E(\hat{g}) = \sqrt{\sum\limits_{k=0}^K \left(g(k) - \hat{g}(k)\right)^2}
+\end{equation}
+of $E(\hat{g}) = 0.22$.
 
 \section{Impulse Response by Correlation Approach}
 We generate a PRBS signal with $4$ periods in a $7$bit shift register model.
@@ -190,6 +191,56 @@ The function \texttt{intcor} and \texttt{xcorr} yield the same results at $0$, b
 Generally, if $N$ is the signal length, \texttt{intcor} provides a correlation signal with a length of $N+1$ for $N$ even and $N+3$ for $N$ odd.
 MATLAB's implementation yields a significantly longer signal and the correlation sum is weighted by some function of $h$.
 Because of that, for $h\neq0$ MATLAB's \texttt{xcorr} shows a non-constant value for the PRBS auto-correlation while \texttt{intcor} does.
+Figure~\ref{fig:correlation_impulse_responses} shows the resulting impulse responses in comparison to the ground truth.
+We additionally, compared the result of the simplified algorithms for white input signals.
+As PRBS is not exactly white, we get lower performance for the simplified version and we have to apply numerical deconvolution to improve.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/impulse_response_intcor.pdf}
+		\subcaption{Resulting impulse response using intcor.}
+		\label{fig:impulse_response_intcor}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/impulse_response_xcorr.pdf}
+		\subcaption{Resulting impulse response using xcorr.}
+		\label{fig:impulse_response_xcorr}
+	\end{subfigure}
+	\begin{subfigure}{\textwidth}
+		\includegraphics[width=\textwidth]{figures/impulse_response_comparison.pdf}
+		\subcaption{Comparison with ground truth impulse reponse.}
+		\label{fig:impulse_response_comparison}
+	\end{subfigure}
+	\caption{Resulting impulse responses.}\label{fig:correlation_impulse_responses}
+\end{figure}
+
+Table~\ref{tab:correlation_appraoch_errors} shows the 2-norm of the errors between ground truth impulse reponse and the estimated results.
+The 2-norms of the errors are computed based on \eqref{eq:2-norm}.
+We additionally compare the result to the estimate of the numerical deconvolution algorithm developed in the previous section.
+Note that, in contrast to the previous section, we now apply a PRBS signal instead of random white noise to the system.
+We observe that the error of the numerical deconvolution approach is significantly smaller (approx. half as large) than in the previous section. 
+As we use the same impulse reponse length $K$, the smaller error is due to the better eligible PRBS signal.
+The comparison shows that the correlation approach with the \texttt{xcorr} correlation function shows the lowest error, while the correlation approach with the \texttt{intcor} function performs worst.
+The performance of the previous numerical deconvolution of the input and output signals directly is between the new appraoches of this section.
+
+\begin{table}[h]
+	\centering
+
+	\begin{tabular}{l|c}
+	\hline
+	\hline
+	\textbf{Approach} & \textbf{2-norm of error}\\
+	\hline
+		correlation approach using \texttt{intcor} & $0.13$ \\
+		correlation approach using \texttt{xcorr} & $0.10$ \\\hline
+		numerical deconvolution (1.\ref{section:numdec}) & $0.12$\\
+	\hline
+	\hline
+	\end{tabular}
+	\caption{Errors of the estimates of the impulse responses compared to the ground truth impulse reponse obtained by the MATLAB command. We compare the correlation approach algorithm for the correlation functions \texttt{intcor} and \texttt{xcorr} as well as the numerical deconvolution approach from the previous section.}
+	\label{tab:correlation_appraoch_errors}
+\end{table}
 
 \matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}{Estimator of the impulse response via the correlation approach.}{lst:corr_approach}
 

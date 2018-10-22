@@ -26,7 +26,8 @@ y = simout.Data;
 
 zero_index = ha(end)+1;
 
-K = 50/Te;
+K = 60/Te;
+%K = ceil(N/2);
 
 auto_corr_trunc = auto_corr(zero_index:zero_index+K-1);
 cross_corr_trunc = cross_corr(zero_index:zero_index+K-1);
@@ -151,61 +152,50 @@ xlabel 'Time [s]'
 ylabel 'Amplitude'
 
 
+%% Previous result: 
+old = estimate_impulse_response_numdec(Uprbs, y, K);
+
 %% Comparison 
 
 figure;
 sys = tf(1, [1, 0.4, 4.3, 0.85, 1]);
 sys = c2d(sys, Te, 'zoh');
-Y = impulse(Te*sys, 'r');
-Y = Y(1:size(t_g));
+Y = Te*impulse(sys);
 hold on;
-stairs(t_g, Y);
+if size(t_g,1) < size(Y,1)
+	stairs(t_g, Y(1:size(t_g,1)));
+else
+	stairs(t_g(1:size(Y,1)), Y);
+end
 stairs(t_g, g);
 stairs(t_g, g_xcorr);
-stairs(t_g, g2);
-stairs(t_g, g2_xcorr)
+%stairs(t_g, g2);
+%stairs(t_g, g2_xcorr)
+stairs(t_g, old);
 grid
 xlabel 'Time [s]'
 ylabel 'Amplitude'
-legend('MATLAB', 'numerical deconvolution intcor', 'numerical deconvolution xcorr', 'simple intcor', 'simple xcorr');
+legend('MATLAB (ground truth)', ...
+	'intcor', ...
+	'xcorr', ...
+	'numdec');
+	%'simple intcor', ...
+	%'simple xcorr');
 title 'Comparison of the Approaches'
 
 
-%% Comparison to previous approach
-u = Uprbs;
-Nruns = 50;
-K = 50/Te;
 
-results1 = zeros(Nruns, K);
-results2 = zeros(Nruns, K);
-results3 = zeros(Nruns, K);
-
-for i=1:Nruns
-	simin.signals.values = Uprbs;
-	simin.time = t;
-
-	sim('ce1');
-
-	results1(i,:) = estimate_impulse_response_corr(u, simout.Data, K);
-	results2(i,:) = estimate_impulse_response_numdec(u, simout.Data, K);
-	results3(i,:) = estimate_impulse_response_corr(u, simout.Data, K, 'xcorr_simple');
+%% 2-norms of errors
+if size(Y,1) < K
+	Y_complete = zeros(K, 1);
+	Y_complete(1:size(Y,1)) = Y;
+	Y = Y_complete;
+else
+	Y = Y(1:K);
 end
+disp(sprintf("L2 norm of error for numdec intcor: %.2f", norm(Y-g)))
+disp(sprintf("L2 norm of error for simple intcor: %.2f", norm(Y-g2)))
+disp(sprintf("L2 norm of error for numdec xcorr: %.2f", norm(Y-g_xcorr)))
+disp(sprintf("L2 norm of error for simple xcorr: %.2f", norm(Y-g2_xcorr)))
+disp(sprintf("L2 norm of error for old aproach: %.2f", norm(Y-old)))
 
-figure
-hold on
-X = [t_g', fliplr(t_g')];
-Y1 = [min(results1), fliplr(max(results1))];
-fill(X, Y1, 'r');
-Y3 = [min(results3), fliplr(max(results3))];
-fill(X, Y3, 'g');
-Y2 = [min(results2), fliplr(max(results2))];
-fill(X, Y2, 'black');
-
-alpha(0.25)
-grid
-plot(t_g, mean(results1), 'r')
-plot(t_g, mean(results3), 'g')
-plot(t_g, mean(results2), 'black')
-legend('Correlation appraoch, intcor (1.4)', ...
-	'Correlation appraoch, xcorr (1.4)', ...
-	'Numerical Deconvolution (1.3)')
