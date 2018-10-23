@@ -57,3 +57,11 @@ grid
 figure
 our = frd(G, 2*pi*F);
 bode(our)
+
+%% Both
+figure
+grid
+hold on
+bode(our)
+bode(resp)
+legend('identified', 'ground truth')
