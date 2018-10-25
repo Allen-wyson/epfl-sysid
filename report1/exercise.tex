@@ -244,29 +244,62 @@ The performance of the previous numerical deconvolution of the input and output 
 
 \matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}{Estimator of the impulse response via the correlation approach.}{lst:corr_approach}
 
+\newpage
+
 \section{Frequency Domain Identification using a Periodic Signal}
 
 In this task we want to use the Fourier analysis method to identify the frequency response of our model shown in Figure~\ref{fig:testmodel}. 
 Therefore we excite the model with a PRBS signal with a length around $N = 2000$. 
-In order to get a good trade off between the resolution of the estimates (number of data $N = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose $n=8$ and $p=8$.
+In order to get a good trade off between the resolution of the estimates (samples per period $M = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose a signal with 4 periods $p=8$ in a 7 bit $n=8$ shift register.
 
 First we compute the Fourier transform of the input and the obtained output signal of our system using the \texttt{fft} command in MATLAB for each period. To reduce the measurement error we average the Fourier series coefficients but we ignore the first period
 
 \begin{align}\label{eq:fft_average}
-	 Y(n) = \frac{1}{p}\sum\limits_{i=2}^p Y_i (n) \quad \quad n = 1,2,\ldots,N
+	 Y(n) = \frac{1}{p}\sum\limits_{i=2}^p Y_i (n) \quad \quad n = 1,2,\ldots,M
  \intertext{and} 
-	\\ U(n) = \frac{1}{p}\sum\limits_{i=2}^p U_i (n) \quad \quad n = 1,2,\ldots,N
+	U(n) = \frac{1}{p}\sum\limits_{i=2}^p U_i (n) \quad \quad n = 1,2,\ldots,M .
 \end{align}
 
+In addition we calculate the frequency response $ G(e^{j \omega_n}) = Y(n)/ U(n)$. 
+The results can be seen in Figure ~\ref{fig:correlation_impulse_responses}.
 
-Afterwards we compute the frequency vector 
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=6cm]{figures/ffts.png}
+	\caption{Fourier transform of the input signal $U$, the output $Y$ and the transfer function $G$}\label{fig:ffts}
+\end{figure}
+
+
+Afterwards we compute the frequency vector for one period
 
 \begin{equation}\label{eq:f_vector}
-	\left[ 0, \frac{\omega_s}{N},\frac{2\omega_s}{N}, \ldots, \frac{(N-1)\omega_s}{N} \right] .
+	\left[ 0, \frac{\omega_s}{M},\frac{2\omega_s}{M}, \ldots, \frac{(M-1)\omega_s}{M} \right] .
 \end{equation}
 
 
 This vector is then used to generate a frequency-domain model using the \texttt{fft} MATLAB command. 
+
+
+Finally, we compare the obtained Bode diagram of the identified model with the true one. Figure ~\ref{fig:resp_noiseless} shows the frequency response without noise. 
+As we use a periodic signal, the truncation error is suppressed and the identified model approaches the true one very well. 
+Figure ~\ref{fig:resp_noise} shows the frequency response after applying a PRBS signal with noise.
+Since the impact of noise is higher in high frequencies, the deviation is much bigger in the region of high frequencies. 
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/resp_noiseless.png}
+		\subcaption{Frequency response without noise}
+		\label{fig:resp_noiseless}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/resp_noise.png}
+		\subcaption{Frequency response with noise}
+		\label{fig:resp_noise}
+	\end{subfigure}
+	\caption{Comparision of the frequency response of identified model with the true one}\label{fig:f_resp}
+\end{figure}
+
 
 
 \section{Frequency Domain Identification using a Random Signal}
