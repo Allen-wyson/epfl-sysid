@@ -245,6 +245,30 @@ The performance of the previous numerical deconvolution of the input and output 
 \matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}{Estimator of the impulse response via the correlation approach.}{lst:corr_approach}
 
 \section{Frequency Domain Identification using a Periodic Signal}
+
+In this task we want to use the Fourier analysis method to identify the frequency response of our model shown in Figure~\ref{fig:testmodel}. 
+Therefore we excite the model with a PRBS signal with a length around $N = 2000$. 
+In order to get a good trade off between the resolution of the estimates (number of data $N = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose $n=8$ and $p=8$.
+
+First we compute the Fourier transform of the input and the obtained output signal of our system using the \texttt{fft} command in MATLAB for each period. To reduce the measurement error we average the Fourier series coefficients but we ignore the first period
+
+\begin{align}\label{eq:fft_average}
+	 Y(n) = \frac{1}{p}\sum\limits_{i=2}^p Y_i (n) \quad \quad n = 1,2,\ldots,N
+ \intertext{and} 
+	\\ U(n) = \frac{1}{p}\sum\limits_{i=2}^p U_i (n) \quad \quad n = 1,2,\ldots,N
+\end{align}
+
+
+Afterwards we compute the frequency vector 
+
+\begin{equation}\label{eq:f_vector}
+	\left[ 0, \frac{\omega_s}{N},\frac{2\omega_s}{N}, \ldots, \frac{(N-1)\omega_s}{N} \right] .
+\end{equation}
+
+
+This vector is then used to generate a frequency-domain model using the \texttt{fft} MATLAB command. 
+
+
 \section{Frequency Domain Identification using a Random Signal}
 
 \end{document}
