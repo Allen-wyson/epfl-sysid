@@ -250,7 +250,7 @@ The performance of the previous numerical deconvolution of the input and output 
 
 In this task we want to use the Fourier analysis method to identify the frequency response of our model shown in Figure~\ref{fig:testmodel}. 
 Therefore we excite the model with a PRBS signal with a length around $N = 2000$. 
-In order to get a good trade off between the resolution of the estimates (samples per period $M = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose a signal with 4 periods $p=8$ in a 7 bit $n=8$ shift register.
+In order to get a good trade off between the resolution of the estimates (samples per period $M = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose a signal with 4 periods $p=8$ in a 8 bit $n=8$ shift register.
 
 First we compute the Fourier transform of the input and the obtained output signal of our system using the \texttt{fft} command in MATLAB for each period. To reduce the measurement error we average the Fourier series coefficients but we ignore the first period
 
