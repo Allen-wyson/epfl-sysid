@@ -15,6 +15,8 @@
 \usepackage{libertine}
 \usepackage{longtable}
 
+\renewcommand{\floatpagefraction}{.9}
+
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
@@ -35,17 +37,16 @@
   deletekeywords={input},            % if you want to delete keywords from the given language
 }
 
-\newcommand*{\matlabcode}[3]{\begin{figure}[h]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
+\newcommand*{\matlabcode}[3]{\begin{figure}[h!]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
 
-\title{System Identification (ME421)}
-\subtitle{CE-1: Nonparametric Methods}
+\subtitle{System Identification (ME421)}
+\title{Computer Exercises 1: Nonparametric Methods}
 \author{\textsc{Julia Krottenthaler} \and \textsc{Arne Sachtler}}
 \date{Fall 2018 - EPFL}
 
 \begin{document}
 \maketitle
 \tableofcontents
-
 \section{Step Response}
 
 Figure~\ref{fig:testmodel} shows the modelled system, which will be used for the system identification exercises.
@@ -57,8 +58,6 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 	\includegraphics[height=4cm]{figures/systemmodel.png}
 	\caption{Simulink model of the test system}\label{fig:testmodel}
 \end{figure}
-
-
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}{0.49\textwidth}
@@ -73,7 +72,6 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 \end{figure}
 
 \section{Auto Correlation of a PRBS signal}
-
 In order to compute the cross-correlation of two discrete-time signals $u(k)$ and $y(k)$, we use 
 \begin{equation}
 	R_{uy}(h) = \frac{1}{M} \sum\limits_{k=0}^{M-1} u(k)y(k-h)\, .
@@ -146,9 +144,7 @@ As the true impulse response is approximately zero after $75 s$, we decided to s
 Note that we of course do not know the length of the impulse response for arbitrary systems to be identified. 
 Here, other methods to determine the main time constants or systematic evaluation of different target lengths $K$ must be employed.
 Listing~\ref{lst:numdec} shows our implementation in MATLAB.
-
 \matlabcode{../matlab/ce1/estimate_impulse_response_numdec.m}{Estimator of the impulse response via numerical deconvolution in MATLAB.}{lst:numdec}
-
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}{.49\textwidth}
@@ -175,29 +171,29 @@ Afterwards, the PRBS signal is applied to the system.
 First we compute the cross-correlation between the input and the output signal $R_{uy}(h)$ and the auto-correlation of the input signal $R_{uu}(h)$ using the previously implemented \texttt{intcor} function and MATLAB's \texttt{xcorr} function. The results are shown in Figure~\ref{fig:cross_correlations}.
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}{0.7\textwidth}
+	\begin{subfigure}{0.6\textwidth}
 		\includegraphics[width=\textwidth]{figures/ac.pdf}
 		\subcaption{Auto-correlation $R_{uu}(h)$}
 		\label{fig:cc_ac}
 	\end{subfigure}
-	\begin{subfigure}{0.7\textwidth}
+	\begin{subfigure}{0.6\textwidth}
 		\includegraphics[width=\textwidth]{figures/cc.pdf}
 		\subcaption{Cross-correlation $R_{yu}(h)$, (zoomed and truncated)}
 		\label{fig:cc_cc}
 	\end{subfigure}
 	\caption{Correlation signals computed from input and output signal.}\label{fig:cross_correlations}
 \end{figure}
+
 The function \texttt{intcor} and \texttt{xcorr} yield the same results at $0$, but different results for the remaining values on the time-axis.
 Generally, if $N$ is the signal length, \texttt{intcor} provides a correlation signal with a length of $N+1$ for $N$ even and $N+3$ for $N$ odd.
 MATLAB's implementation yields a significantly longer signal and the correlation sum is weighted by some function of $h$.
 Because of that, for $h\neq0$ MATLAB's \texttt{xcorr} shows a non-constant value for the PRBS auto-correlation while \texttt{intcor} does.
 Figure~\ref{fig:correlation_impulse_responses} shows the resulting impulse responses in comparison to the ground truth.
-We additionally, compared the result of the simplified algorithms for white input signals.
+We additionally compared the result of the simplified algorithms for white input signals.
 As PRBS is not exactly white, we get lower performance for the simplified version and we have to apply numerical deconvolution to improve.
 We implemented the different approaches in the same function, an optional parameter allows to choose one of the methods. 
 Our implementation is presented in Listing~\ref{lst:corr_approach}.
-
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/impulse_response_intcor.pdf}
@@ -214,21 +210,20 @@ Our implementation is presented in Listing~\ref{lst:corr_approach}.
 		\subcaption{Comparison with ground truth impulse reponse.}
 		\label{fig:impulse_response_comparison}
 	\end{subfigure}
-	\caption{Resulting impulse responses.}\label{fig:correlation_impulse_responses}
+	\caption{Comparison of the identified impulse response with the ground truth.}\label{fig:correlation_impulse_responses}
 \end{figure}
 
-Table~\ref{tab:correlation_appraoch_errors} shows the 2-norm of the errors between ground truth impulse reponse and the estimated results.
+\pagebreak
+Table~\ref{tab:correlation_appraoch_errors} shows the 2-norm of the errors between ground truth impulse response and the estimated results.
 The 2-norms of the errors are computed based on \eqref{eq:2-norm}.
 We additionally compare the result to the estimate of the numerical deconvolution algorithm developed in the previous section.
 Note that, in contrast to the previous section, we now apply a PRBS signal instead of random white noise to the system.
 We observe that the error of the numerical deconvolution approach is significantly smaller (approx. half as large) than in the previous section. 
 As we use the same impulse reponse length $K$, the smaller error is due to the better eligible PRBS signal.
 The comparison shows that the correlation approach with the \texttt{xcorr} correlation function shows the lowest error, while the correlation approach with the \texttt{intcor} function performs worst.
-The performance of the previous numerical deconvolution of the input and output signals directly is between the new appraoches of this section.
-
+The performance of the previous numerical deconvolution of the input and output signals directly is between the new approaches of this section.
 \begin{table}[h]
 	\centering
-
 	\begin{tabular}{l|c}
 	\hline
 	\hline
@@ -240,14 +235,13 @@ The performance of the previous numerical deconvolution of the input and output 
 	\hline
 	\hline
 	\end{tabular}
-	\caption{Errors of the estimates of the impulse responses compared to the ground truth impulse reponse obtained by the MATLAB command. We compare the correlation approach algorithm for the correlation functions \texttt{intcor} and \texttt{xcorr} as well as the numerical deconvolution approach from the previous section.}
+	\caption{Errors of the estimates of the impulse responses compared to the ground truth impulse response obtained by the MATLAB command. We compare the correlation approach algorithm for the correlation functions \texttt{intcor} and \texttt{xcorr} as well as the numerical deconvolution approach from the previous section.}
 	\label{tab:correlation_appraoch_errors}
 \end{table}
 
 \matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}
 {Estimator of the impulse response via the correlation approach.}
 {lst:corr_approach}
-
 \section{Frequency Domain Identification using a Periodic Signal}
 In this task we want to use the Fourier analysis method to identify the frequency response of our model shown in Figure~\ref{fig:testmodel}. 
 For the frequency domain identification we use $8$ periods of a PRBS signal generated by a $8$-bit shift-register.
@@ -261,38 +255,45 @@ First we compute the Fourier transform of the input and the obtained output sign
 	U(n) = \frac{1}{p}\sum\limits_{i=2}^p U_i (n) \quad \quad n = 1,2,\ldots,M .
 \end{align}
 In addition we calculate the frequency response $ G(e^{j \omega_n}) = Y(n)/ U(n)$. 
-The results can be seen in Figure ~\ref{fig:correlation_impulse_responses}.
+The results can be seen in Figure ~\ref{fig:ffts_diff}.
+In order to determine the effect of noise to the frequency response, we compared the spectra of the system response to a PRBS signal and to a constant-zero input.
+We can observe, that for frequencies higher than $\approx 2.5\frac{rad}{s}$ the signal is hidden in the noise and consequently we expect in poorer identification result in the frequency range higher than $\omega = 2.5\frac{rad}{s}$.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[height=6cm]{figures/ffts.pdf}
-	\caption{Fourier transform of the input signal $U$, the output $Y$ and the transfer function $G$}\label{fig:ffts}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/ffts.pdf}
+		\subcaption{input signal $U$, the output signal $Y$ and the transfer function $G$}\label{fig:ffts_diff}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/ffts_snr.pdf}
+		\subcaption{output signal for PRBS input and zero input}\label{fig:ffts_snr}
+	\end{subfigure}
+	\caption{Spectra of different signals. On the left we show the spectra of the input and output signals as well as the transfer function when applying the PRBS signal to the system. On the right we apply to different signals, a PRBS signal and a constant-zero signal, to the system and show the spectra of the system response. We can observe, that for high frequencies the system frequency response hides in the noise.}
 \end{figure}
 Afterwards we compute the frequency vector for one period
 \begin{equation}\label{eq:f_vector}
 	\left[ 0, \frac{\omega_s}{M},\frac{2\omega_s}{M}, \ldots, \frac{(M-1)\omega_s}{M} \right] .
 \end{equation}
-This vector is then used to generate a frequency-domain model using the \texttt{fft} MATLAB command. 
+This vector is then used to generate a frequency-domain model using the MATLAB \texttt{frd} command. 
 Finally, we compare the obtained Bode diagram of the identified model with the true one. Figure ~\ref{fig:resp_noiseless} shows the frequency response without noise. 
-As we use a periodic signal, the truncation error is suppressed and the identified model approaches the true one very well. 
-Figure ~\ref{fig:resp_noise} shows the frequency response after applying a PRBS signal with noise.
-Since the impact of noise is higher in high frequencies, the deviation is much bigger in the region of high frequencies. 
-
+As we use a periodic signal, the truncation error is suppressed and the identified model approaches the true one (neglecting numerical errors) exactly. 
+Figure ~\ref{fig:resp_noise} shows the frequency response applying a PRBS signal with the noise block switched on.
+As we predicted based on the spectra of the output signals in Figure~\ref{fig:ffts_snr}, the estimated frequency response becomes poor for frequencies higher than $\approx 2.5 \frac{rad}{s}$.
 \begin{figure}[h]
-	\centering
-	\begin{subfigure}{0.49\textwidth}
+	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{figures/resp_nonoise.pdf}
-		\subcaption{Frequency response without noise}
+		\subcaption{Identified frequency response and true response with noise block switched off.}
 		\label{fig:resp_noiseless}
 	\end{subfigure}
-	\begin{subfigure}{0.49\textwidth}
+	\hspace*{0.05\textwidth}
+	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{figures/resp_noise.pdf}
-		\subcaption{Frequency response with noise}
+		\subcaption{Identified frequency response and true response with noise block switched on.}
 		\label{fig:resp_noise}
 	\end{subfigure}
 	\caption{Comparison of the frequency response of identified model with the true one}\label{fig:f_resp}
 \end{figure}
-
 \matlabcode{../matlab/ce1/estimate_frequency_response.m}
 {{Compute frequency response of the system to be identified using an average of Fourier transforms of each period. The first period is skipped as we wait for transience to vanish. Additionally, the frequency vector is computed.}}
 {lst:freq_resp}

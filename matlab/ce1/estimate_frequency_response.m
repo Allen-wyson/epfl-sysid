@@ -11,8 +11,8 @@ function [sys, f] = estimate_frequency_response(period_len, n_periods, in, out, 
 
 	% Skip first period --> we want stationary behavior 
 	for i = 2:n_periods
-		fft_in = fft_in + fft(in((i-1)*period_len+1:i*period_len));
-		fft_out = fft_out + fft(out((i-1)*period_len+1:i*period_len));
+		fft_in = fft_in + fft(in((i-1)*period_len+1:i*period_len)) ./ period_len;
+		fft_out = fft_out + fft(out((i-1)*period_len+1:i*period_len)) ./ period_len;
 	end
 
 	fft_in = fft_in ./ (n_periods-1);
