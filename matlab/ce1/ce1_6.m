@@ -15,33 +15,41 @@ simin.time = t;
 sim('ce1');
 y = simout.Data;
 
-settings = {"none", N, "[.6, .6, .6]", "-";
-			"hann", 20, "b", "-.";
-			"hann", 50, "b", ":";
-			"hann", 150, "b", "--";
-			"hann", 500, "b", "-";
-			"hamming", 20, "r", "-.";
-			"hamming", 50, "r", ":";
-			"hamming", 150, "r", "--";
-			"hamming", 500, "r", "-"};
+% setting = window, window_width, color, linestyle, samples_per_group
+settings = {
+			"none", N, "[.6, .6, .6]", "-", 1;
+			"none", N, "g", "-", 2;
+			% "none", N, "b", "-", 3;
+			% "none", N, "g", "-", 4;
+			% "hann", 20, "b", "-.", 1;
+			% "hann", 50, "b", ":", 1;
+			"hann", 150, "b", "-", 1;
+			"hann", 150, "b", "--", 2;
+			% "hann", 500, "b", "-", 1;
+			% "hamming", 20, "r", "-.", 1;
+			% "hamming", 50, "r", ":", 1;
+			% "hamming", 150, "r", "-", 1;
+			% "hamming", 500, "r", "-", 1
+			};
 
-plot_titles = ['No window'];
-for i=2:size(settings,1)
-	plot_titles = [plot_titles, sprintf("Windowed (%s, M=%d)", settings{i,1}, 2*settings{i,2}+1)];
+plot_titles = {};
+for i=1:size(settings,1)
+	plot_titles{i} = sprintf("%s, M=%d, m=%d", settings{i,1}, 2*settings{i,2}+1, settings{i,5});
 end
 
-G = zeros(2*ceil(N/2)+1,size(settings, 1));
-f = 2*pi*(0:1:N)' .* 1/(Te*N);
+G = {};
+f = {};
 
 for i=1:size(settings, 1)
 	M = settings{i,2};
-	G(:,i) = spectral_analysis(u, y, settings{i,1}, M);
+	[G{i}, fi] = spectral_analysis(u, y, settings{i,5}, settings{i,1}, M);
+	f{i} = fi/Te;
 end
 
 % Plot spectrum
 for i=1:size(settings,1)
-	p = abs(G(:,i));
-	loglog(f(1:N/2), p(1:N/2), 'Color', settings{i,3}, 'DisplayName', plot_titles{i}, 'LineStyle', settings{i,4});
+	p = abs(G{i});
+	loglog(f{i}, p, 'Color', settings{i,3}, 'DisplayName', plot_titles{i}, 'LineStyle', settings{i,4});
 	hold on;
 end
 
@@ -51,11 +59,16 @@ title 'Frequency response';
 grid;
 legend('Location','southwest');
 
-sys = {};
 figure
+sys = {};
+sys_true = tf(1, [1, 0.4, 4.3, 0.85, 1]);
+sys_true = c2d(sys_true, Te, 'zoh');
+resp = frd(sys_true, f{i}); % pi*F
+bode(resp)
+hold on
 for i=1:size(settings,1)
-	sys{i} = frd(G(:,i), f);
+	sys{i} = frd(G{i}, f{i});
 end
 bode(sys{:})
-legend(plot_titles);
+legend('ground truth', plot_titles{:});
 grid;

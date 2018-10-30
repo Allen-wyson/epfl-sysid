@@ -338,6 +338,7 @@ As we predicted based on the spectra of the output signals in Figure~\ref{fig:ff
 {{Compute the frequency response of the system to be identified using an average of Fourier transforms of each period. The first period is skipped as we wait for transience to vanish. Additionally, the frequency vector is computed.}}
 {lst:freq_resp}
 
+\clearpage
 \section{Frequency Domain Identification using a Random Signal}
 
 In contrast to the previous section, we now use a complete (non-periodic) random signal.
@@ -362,8 +363,21 @@ which yields
 \end{equation}
 where $\Phi_{yu}(\omega)$ and $\Phi_{uu}(\omega)$ denote the Fourier transform of the cross-correlation $R_{yu}$ and the auto-correlation $R_{uu}$, respectively.
 Further, the correlation functions can be multiplied by windowing function in order to remove the noise due to the high variance of the estimates of the correlation function for large $h$.
-Figure~\ref{fig:resp_spec_ana} shows the results for different window function and window widths and Listing~\ref{lst:resp_spec_ana} shows the corresponding implementation.
+Figure~\ref{fig:cross_corr_windowed} shows our implementation of the windowing of the correlation signals.
+We parametrize the window shape by the parameter $M$, which specifies the number of samples to keep in both direction of the $0$ such that the total window has a length of $2M+1$. As the number of samples returned by our correlation function \texttt{intcor} is always odd, we can always guarantee that the maximum value of the window coincides with $h=0$.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{figures/windowed_cross_cor.pdf}
+	\caption{Cross-correlation signal in windowed cross correlation signal.}
+	\label{fig:cross_corr_windowed}
+\end{figure}
 
+Figure~\ref{fig:resp_spec_ana} shows the results for different window functions and window widths and Listing~\ref{lst:resp_spec_ana} shows the corresponding implementation.
+We can observe, that the frequency response directly obtained without further processing like windowing or averaging is highly noise.
+The windowed versions yield smoother results.
+While a very narrow window leads to blurring of the details of the spectrum, a wider window increases the number of available fine details.
+At the same time, also noise also becomes more present increasing the width of the window.
+Here, a setting of $M=301$ shows the best results, as is captures the peaks, but is not as wiggly as the results for $M=1001$.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{figures/freq_resp_spec_ana.pdf}
@@ -371,8 +385,34 @@ Figure~\ref{fig:resp_spec_ana} shows the results for different window function a
 	\label{fig:resp_spec_ana}
 \end{figure}
 
+After this, we also implemented the averaging over multiple spectra splitting the available data into distinct groups.
+We split the data into $m$ groups such that each group consists of $n = \left\lfloor\frac{N}{m}\right\rfloor$ samples.
+On the one hand, increasing the number of groups promised that noise will average out.
+On the other hand, we also loose frequency resolution increasing the number of groups.
+Figure~\ref{fig:bode_final} shows the final results for the spectral analysis approach.
+We compare the ground truth obtained from the transfer function directly with different methods in a Bode plot.
+As in the previous section, for higher frequencies the accuracy for higher frequency is very low, as the signal hides in the present noise.
+In the higher frequency range, the signal is damped so much that the noise has higher power.
+Even though, the averaged version of the frequency response without windowing shows better results that the non-averaged one, the windowed methods show better performance.
+We achieved the best performance using a hann window with $M=301$ and using $m=2$ groups for averaging.
+While there is no big difference visible in the magnitude plot, the phase plot shows better performance for the averaged version.
+
 \matlabcode{../matlab/ce1/spectral_analysis.m}
 {{Compute the frequency response of the system to be identified using the spectral analysis method. The function interface provides additional parameters for specifiying the (optional) window and the corresponding window-width. If no window parameters are given, no window is used.}}
-{lst:freq:resp_spec_ana}
+{lst:resp_spec_ana}
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{\textwidth}
+		\includegraphics[width=\textwidth]{figures/bode_1_6_large.pdf}
+		\subcaption{Bode diagram}
+	\end{subfigure}
+	\begin{subfigure}{\textwidth}
+		\includegraphics[width=\textwidth]{figures/bode_1_6.pdf}
+		\subcaption{Bode diagram (zoomed)}
+	\end{subfigure}
+	\caption{Bode diagram comparing the ground truth frequency response and the identified frequency response obtained using different methods. In general, the methods using the window functions achieve better results. The best phase information is obtained using a hann-window and averaging using two group.}
+	\label{fig:bode_final}
+\end{figure}
 
 \end{document}

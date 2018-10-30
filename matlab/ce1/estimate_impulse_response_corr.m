@@ -1,9 +1,9 @@
 function resp = estimate_impulse_response_corr(u, y, K, method)
-	%% u: input signal
-	%% y: output signal
-	%% FIR length
-	%% method: one of ['intcor_num_dec', 'intcor_simple', 
-	%%     'xcorr_num_dec', 'xcorr_simple']
+	% u: input signal
+	% y: output signal
+	% FIR length
+	% method: one of ['intcor_num_dec', 'intcor_simple', 
+	%     'xcorr_num_dec', 'xcorr_simple']
 	if nargin<4; method = 'intcor_num_dec'; end
 
 	%% Compute auto- and cross correlation 
