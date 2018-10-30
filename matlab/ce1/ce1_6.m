@@ -85,11 +85,14 @@ grid;
 legend('Location','southwest');
 
 
+%% Bode plot (einfach von oben kopiert)
+
 figure;
 sys = frd(G,f);
-bode(sys);
-
-i=1;
+bode(sys,'k');
+legendInfo{1} = ['Without window']; 
+hold on;
+i=2;
 
 for M=20:20:200
 
@@ -114,10 +117,21 @@ for M=20:20:200
 	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
 	power = abs(G_windowed);
     
+    
     sys_windowed = frd(G_windowed,f);
     bode(sys_windowed);
     
-    legendInfo{i} = ['Windowed (M =' num2str(2*M+1) ')']; 
+    if strcmp(method,'hann')
+	legendInfo{i} = ['Windowed (hann, M =' num2str(2*M+1) ')']; 
+    
+    else
+        if strcmp(method,'hamming')
+        legendInfo{i} = ['Windowed (hamming, M =' num2str(2*M+1) ')']; 
+        else
+            error('Method not valid.')
+        end
+    end
+    
     i= i+1;
     hold on;
 
