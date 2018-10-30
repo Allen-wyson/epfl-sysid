@@ -1,10 +1,5 @@
 %% Initialisation and binary random signal
-
-clear all;
-clc;
 close all;
-figure;
-method = 'hann';
 
 N = 2000;
 u = randi(2, N, 1) - 1.5;
@@ -20,87 +15,34 @@ simin.time = t;
 sim('ce1');
 y = simout.Data;
 
-% <<<<<<< HEAD
-% G = spectral_analysis(u, y);
-% f = 2*pi*(0:1:N)' .* 1/(Te*N);
-% =======
-%% Spectral analysis method
+settings = ["none", N, "[.6, .6, .6]", "-";
+			"hann", 20, "b", "-.";
+			"hann", 50, "b", ":";
+			"hann", 150, "b", "--";
+			"hann", 500, "b", "-";
+			"hamming", 20, "r", "-.";
+			"hamming", 50, "r", ":";
+			"hamming", 150, "r", "--";
+			"hamming", 500, "r", "-"];
 
-cross_corr = intcor(u, y);
-auto_corr = intcor(u, u);
-
-phi_yu = fft(cross_corr);
-phi_uu = fft(auto_corr);
-G = phi_yu ./ phi_uu;
-f = 2*pi*(0:1:N)' .* (1/Te) / N;
-% >>>>>>> 040d0451ad8436a3ae96543a4967659c7f459b74
-
-%% Plots and Windowing
-
-% Plot spectrum
-p = abs(G);
-% <<<<<<< HEAD
-% loglog(f(1:N/2), p(1:N/2), 'Color', [.5 .5 .5], 'DisplayName', 'Plain');
-% =======
-loglog(f(1:N/2), p(1:N/2), 'color', [0.9 0.9 0.9], 'DisplayName', 'Plain');
-% >>>>>>> 040d0451ad8436a3ae96543a4967659c7f459b74
-grid
-hold on
-
-window_sizes = [20, 50, 150, 500];
-linestyles = ["-.", ":", "--", "-"];
-% Windowed version
-for i=[window_sizes; linestyles]
-	M = str2num(i(1));
-	G_windowed = spectral_analysis(u, y, 'hann', M);
-	power = abs(G_windowed);
-	loglog(f(1:N/2), power(1:N/2), 'Color', 'b', 'DisplayName', sprintf('Windowed (hann, M=%d)', 2*M+1), 'LineStyle', i(2));
+plot_titles = ['No window'];
+for i=2:size(settings,1)
+	plot_titles = [plot_titles, sprintf("Windowed (%s, M=%d)", settings(i,1), 2*str2num(settings(i,2))+1)];
 end
 
-% <<<<<<< HEAD
-% for i=[window_sizes; linestyles]
-% 	M = str2num(i(1));
-% 	G_windowed = spectral_analysis(u, y, 'hamming', M);
-% 	power = abs(G_windowed);
-% 	loglog(f(1:N/2), power(1:N/2), 'Color', 'r', 'DisplayName', sprintf('Windowed (hamming, M=%d)', 2*M+1), 'LineStyle', i(2));
-% =======
-for M=20:20:200
+G = zeros(2*ceil(N/2)+1,size(settings, 1));
+f = 2*pi*(0:1:N)' .* 1/(Te*N);
 
-	window = zeros(N+1, 1);
-	low = ceil(N/2)-M;
-	up = ceil(N/2)+M;
-    if strcmp(method,'hann')
-	window(low:up) = hann(2*M+1);
-    else
-        if strcmp(method,'hamming')
-        window(low:up) = hamming(2*M+1);
-        else
-            error('Method not valid.')
-        end
-    end
+for i=1:size(settings, 1)
+	M = str2num(settings(i,2));
+	G(:,i) = spectral_analysis(u, y, settings(i,1), M);
+end
 
-	cross_corr_windowed = cross_corr .* window;
-	auto_corr_windowed = auto_corr .* window;
-
-	phi_yu_windowed = fft(cross_corr_windowed);
-	phi_uu_windowed = fft(auto_corr_windowed);
-	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
-	power = abs(G_windowed);
-    
-    
-    if strcmp(method,'hann')
-	loglog(f(1:N/2), power(1:N/2), 'DisplayName', sprintf('Windowed (hann, M=%d)', 2*M+1));
-    
-    else
-        if strcmp(method,'hamming')
-        loglog(f(1:N/2), power(1:N/2), 'DisplayName', sprintf('Windowed (hamming, M=%d)', 2*M+1));
-        else
-            error('Method not valid.')
-        end
-    end
-    
-
-% >>>>>>> 040d0451ad8436a3ae96543a4967659c7f459b74
+% Plot spectrum
+for i=1:size(settings,1)
+	p = abs(G(:,i));
+	loglog(f(1:N/2), p(1:N/2), 'Color', settings(i,3), 'DisplayName', plot_titles(i), 'LineStyle', settings(i,4));
+	hold on;
 end
 
 xlabel 'Frequency [rad/s]';
@@ -109,64 +51,12 @@ title 'Frequency response';
 grid;
 legend('Location','southwest');
 
-
-%% Bode plot (einfach von oben kopiert)
-
-figure;
-sys = frd(G,f);
-bode(sys,'k');
-legendInfo{1} = ['Without window']; 
-hold on;
-i=2;
-
-for M=20:20:200
-
-	window = zeros(N+1, 1);
-	low = ceil(N/2)-M;
-	up = ceil(N/2)+M;
-    if strcmp(method,'hann')
-	window(low:up) = hann(2*M+1);
-    else
-        if strcmp(method,'hamming')
-        window(low:up) = hamming(2*M+1);
-        else
-            error('Method not valid.')
-        end
-    end
-
-	cross_corr_windowed = cross_corr .* window;
-	auto_corr_windowed = auto_corr .* window;
-
-	phi_yu_windowed = fft(cross_corr_windowed);
-	phi_uu_windowed = fft(auto_corr_windowed);
-	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
-	power = abs(G_windowed);
-    
-    
-    sys_windowed = frd(G_windowed,f);
-    bode(sys_windowed);
-    
-    if strcmp(method,'hann')
-	legendInfo{i} = ['Windowed (hann, M =' num2str(2*M+1) ')']; 
-    
-    else
-        if strcmp(method,'hamming')
-        legendInfo{i} = ['Windowed (hamming, M =' num2str(2*M+1) ')']; 
-        else
-            error('Method not valid.')
-        end
-    end
-    
-    i= i+1;
-    hold on;
-
+figure
+for i=1:size(settings,1)
+	sys = frd(G(:,i), f);
+	bode(sys);
+	hold on;
 end
 
-legend(legendInfo)
-
-axes_handles = findall(gcf, 'type', 'axes');
-legend(axes_handles(2),legendInfo, 'Location', 'NorthWest');
-legend(axes_handles(3),legendInfo, 'Location', 'SouthWest');
-
-
-
+legend(plot_titles);
+grid;
