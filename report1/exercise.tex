@@ -253,7 +253,6 @@ Our implementation is presented in Listing~\ref{lst:corr_approach}.
 	\caption{Comparison of the identified impulse response with the ground truth.}\label{fig:correlation_impulse_responses}
 \end{figure}
 
-\pagebreak
 Table~\ref{tab:correlation_appraoch_errors} shows the 2-norm of the errors between ground truth impulse response and the estimated results.
 The 2-norms of the errors are computed based on \eqref{eq:2-norm}.
 We additionally compare the result to the estimate of the numerical deconvolution algorithm developed in the previous section.
@@ -396,11 +395,6 @@ In the higher frequency range, the signal is damped so much that the noise has h
 Even though, the averaged version of the frequency response without windowing shows better results that the non-averaged one, the windowed methods show better performance.
 We achieved the best performance using a hann window with $M=301$ and using $m=2$ groups for averaging.
 While there is no big difference visible in the magnitude plot, the phase plot shows better performance for the averaged version.
-
-\matlabcode{../matlab/ce1/spectral_analysis.m}
-{{Compute the frequency response of the system to be identified using the spectral analysis method. The function interface provides additional parameters for specifiying the (optional) window and the corresponding window-width. If no window parameters are given, no window is used.}}
-{lst:resp_spec_ana}
-
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}{\textwidth}
@@ -414,5 +408,9 @@ While there is no big difference visible in the magnitude plot, the phase plot s
 	\caption{Bode diagram comparing the ground truth frequency response and the identified frequency response obtained using different methods. In general, the methods using the window functions achieve better results. The best phase information is obtained using a hann-window and averaging using two group.}
 	\label{fig:bode_final}
 \end{figure}
+
+\matlabcode{../matlab/ce1/spectral_analysis.m}
+{{Compute the frequency response of the system to be identified using the spectral analysis method. The function interface provides additional parameters for specifiying the (optional) window and the corresponding window-width. If no window parameters are given, no window is used.}}
+{lst:resp_spec_ana}
 
 \end{document}
