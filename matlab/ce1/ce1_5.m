@@ -3,7 +3,7 @@ init
 close all; 
 
 n= 8;
-n_periods = 50;
+n_periods = 8;
 Te = 0.5;
 Uprbs = prbs(n, n_periods)*.5;
 N = size(Uprbs,1);
