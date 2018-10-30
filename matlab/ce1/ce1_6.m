@@ -63,8 +63,10 @@ for M=20:20:200
 	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
 	power = abs(G_windowed);
     
+    
     if strcmp(method,'hann')
 	loglog(f(1:N/2), power(1:N/2), 'DisplayName', sprintf('Windowed (hann, M=%d)', 2*M+1));
+    
     else
         if strcmp(method,'hamming')
         loglog(f(1:N/2), power(1:N/2), 'DisplayName', sprintf('Windowed (hamming, M=%d)', 2*M+1));
@@ -72,6 +74,8 @@ for M=20:20:200
             error('Method not valid.')
         end
     end
+    
+
 end
 
 xlabel 'Frequency [rad/s]';
@@ -79,3 +83,51 @@ ylabel 'Power';
 title 'Frequency response';
 grid;
 legend('Location','southwest');
+
+
+figure;
+sys = frd(G,f);
+bode(sys);
+
+i=1;
+
+for M=20:20:200
+
+	window = zeros(N+1, 1);
+	low = ceil(N/2)-M;
+	up = ceil(N/2)+M;
+    if strcmp(method,'hann')
+	window(low:up) = hann(2*M+1);
+    else
+        if strcmp(method,'hamming')
+        window(low:up) = hamming(2*M+1);
+        else
+            error('Method not valid.')
+        end
+    end
+
+	cross_corr_windowed = cross_corr .* window;
+	auto_corr_windowed = auto_corr .* window;
+
+	phi_yu_windowed = fft(cross_corr_windowed);
+	phi_uu_windowed = fft(auto_corr_windowed);
+	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
+	power = abs(G_windowed);
+    
+    sys_windowed = frd(G_windowed,f);
+    bode(sys_windowed);
+    
+    legendInfo{i} = ['Windowed (M =' num2str(2*M+1) ')']; 
+    i= i+1;
+    hold on;
+
+end
+
+legend(legendInfo)
+
+axes_handles = findall(gcf, 'type', 'axes');
+legend(axes_handles(2),legendInfo, 'Location', 'NorthWest');
+legend(axes_handles(3),legendInfo, 'Location', 'SouthWest');
+
+
+
