@@ -184,7 +184,6 @@ legend('MATLAB (ground truth)', ...
 title 'Comparison of the Approaches'
 
 
-
 %% 2-norms of errors
 if size(Y,1) < K
 	Y_complete = zeros(K, 1);
