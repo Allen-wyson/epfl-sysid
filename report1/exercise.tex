@@ -37,15 +37,77 @@
   deletekeywords={input},            % if you want to delete keywords from the given language
 }
 
-\newcommand*{\matlabcode}[3]{\begin{figure}[h!]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
 
-\subtitle{System Identification (ME421)}
-\title{Computer Exercises 1: Nonparametric Methods}
-\author{\textsc{Julia Krottenthaler} \and \textsc{Arne Sachtler}}
-\date{Lausanne, EPFL, Fall 2018}
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\automark{section}
+\ihead{\rightmark}
+\chead{}
+\ohead{\includegraphics[scale=0.025]{figures/EPFL_Logo.png}}
+\setheadsepline{.4pt}
+
+
 
 \begin{document}
-\maketitle
+
+
+\begin{titlepage}
+
+\title{CE-1: Nonparametric Methods} % Title
+
+\author{Arne Sachtler \\ Julia Krottenthaler}		% Author
+ \date{30 October 2018}								% Date
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\centering
+\vspace*{0.5 cm}
+
+    \includegraphics[width=0.7\linewidth]{figures/EPFL_Logo.png}\\[1.0 cm]	
+	\textsc{\Large System Identification}\\[1.0cm]				
+	\rule{\linewidth}{0.2 mm} \\[0.5 cm]
+	{ \LARGE \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+    \vspace{1cm}
+	\begin{minipage}{0.5\textwidth}
+		\begin{flushleft} \large
+			\emph{{Students}:}\\
+			\theauthor
+			\end{flushleft}
+			\end{minipage}~
+			\begin{minipage}{0.4\textwidth}
+			\begin{flushright} \large
+			\emph{{Lecturer}:} \\	
+			Prof. Karimi Alireza  \\
+		\end{flushright}
+	\end{minipage}\\[1.2cm]
+	{\vspace{3cm} \large \thedate}\\[1.5 cm]
+ \vfill
+
+\end{titlepage}
+
+
+
+
+
+
+\newcommand*{\matlabcode}[3]{\begin{figure}[h!]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
+
+%\subtitle{System Identification (ME421)}
+%\title{Computer Exercises 1: Nonparametric Methods}
+%\author{\textsc{Julia Krottenthaler} \and \textsc{Arne Sachtler}}
+%\date{Lausanne, EPFL, Fall 2018}
+
+
+
+%\maketitle
+
+
 \tableofcontents
 \section{Step Response}
 
