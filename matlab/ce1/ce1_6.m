@@ -10,39 +10,30 @@ simin.time = t;
 sim('ce1');
 y = simout.Data;
 
-
-cross_corr = intcor(u, y);
-auto_corr = intcor(u, u);
-
-phi_yu = fft(cross_corr);
-phi_uu = fft(auto_corr);
-G = phi_yu ./ phi_uu;
-f = 2*pi*(0:1:N)' .* (1/Te) / N;
+G = spectral_analysis(u, y);
+f = 2*pi*(0:1:N)' .* 1/(Te*N);
 
 % Plot spectrum
 p = abs(G);
-loglog(f(1:N/2), p(1:N/2), 'yellow', 'DisplayName', 'Plain');
+loglog(f(1:N/2), p(1:N/2), 'Color', [.5 .5 .5], 'DisplayName', 'Plain');
 grid
 hold on
 
+window_sizes = [20, 50, 150, 500];
+linestyles = ["-.", ":", "--", "-"];
 % Windowed version
-
-for i=20:20:100
-
-	window = zeros(N+1, 1);
-	M = i;
-	low = ceil(N/2)-M;
-	up = ceil(N/2)+M;
-	window(low:up) = hann(2*M+1);
-
-	cross_corr_windowed = cross_corr .* window;
-	auto_corr_windowed = auto_corr .* window;
-
-	phi_yu_windowed = fft(cross_corr_windowed);
-	phi_uu_windowed = fft(auto_corr_windowed);
-	G_windowed = phi_yu_windowed ./ phi_uu_windowed;
+for i=[window_sizes; linestyles]
+	M = str2num(i(1));
+	G_windowed = spectral_analysis(u, y, 'hann', M);
 	power = abs(G_windowed);
-	loglog(f(1:N/2), power(1:N/2), 'DisplayName', sprintf('Windowed (hann, M=%d)', 2*i+1));
+	loglog(f(1:N/2), power(1:N/2), 'Color', 'b', 'DisplayName', sprintf('Windowed (hann, M=%d)', 2*M+1), 'LineStyle', i(2));
+end
+
+for i=[window_sizes; linestyles]
+	M = str2num(i(1));
+	G_windowed = spectral_analysis(u, y, 'hamming', M);
+	power = abs(G_windowed);
+	loglog(f(1:N/2), power(1:N/2), 'Color', 'r', 'DisplayName', sprintf('Windowed (hamming, M=%d)', 2*M+1), 'LineStyle', i(2));
 end
 
 legend;
