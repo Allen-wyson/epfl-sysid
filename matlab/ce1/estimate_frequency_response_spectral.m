@@ -1,8 +1,9 @@
 function [sys_windowed, sys, G_windowed, G, F] = estimate_frequency_response_spectral(u, y, Te, N, M, method)
-	% in: the input signal applied to the system to be identified
-	% out: response of the signal
-	% Te: the sampling interval
-    % Numer
+	% in:   the input signal applied to the system to be identified
+	% out:  response of the signal
+	% Te:   the sampling interval
+    % N:    signal length
+    % M:    window width
 	% returns:  sys_windowed: a windowed MATLAB frequency model, 
     %           sys: a MATLAB frequency model, 
     %           G_windowed: a windowed freqency response, 
