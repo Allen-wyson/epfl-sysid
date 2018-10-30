@@ -19,6 +19,6 @@ function [sys, f] = estimate_frequency_response(period_len, n_periods, in, out, 
 	fft_out = fft_out ./ (n_periods-1);
 
 	g = fft_out ./ fft_in; 
-	f = (0:1:(period_len-1))' .* (1/Te) / period_len;
-	sys = frd(g, 2*pi*f);
+	f = 2*pi*(0:1:(period_len-1))' .* (1/Te) / period_len;
+	sys = frd(g, f);
 end

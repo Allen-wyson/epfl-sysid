@@ -61,7 +61,7 @@ fft_out = abs(fft_out ./ (n_periods - 1));
 fft_in = abs(fft_in ./ (n_periods -1));
 fft_zero = abs(fft_zero ./ (n_periods - 1));
 g = fft_out ./ fft_in;
-f = 2*pi*(0:1:(period_length-1))' .* (1/Te) / period_length;
+f = (0:1:(period_length-1))' .* (1/Te) / period_length;
 nmax = floor(period_length/2);
 
 figure
