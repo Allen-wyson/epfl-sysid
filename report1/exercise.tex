@@ -110,6 +110,8 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 	\caption{Step and impulse responses of the test system with and without noise.}\label{fig:responses}
 \end{figure}
 
+\textcolor{red}{The impulse response is scaled due to the saturation block in SIMULINK. --> Write a sentence about this, as the impulse response identified by the identification methods will identify a model in the linear region of the model. Therefore, the impulse responses do not match.}
+
 \section{Auto Correlation of a PRBS signal}
 In order to compute the cross-correlation of two discrete-time signals $u(k)$ and $y(k)$, we use 
 \begin{equation}
