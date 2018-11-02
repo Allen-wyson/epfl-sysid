@@ -86,6 +86,8 @@
 	\vfill
 \end{titlepage}
 \tableofcontents
+
+\newpage
 \section{Step Response}
 
 Figure~\ref{fig:testmodel} shows the modeled system, which will be used for the system identification exercises.
@@ -112,6 +114,8 @@ Figure~\ref{fig:responses} shows the step and impulse response for the system. O
 
 \textcolor{red}{The impulse response is scaled due to the saturation block in SIMULINK. --> Write a sentence about this, as the impulse response identified by the identification methods will identify a model in the linear region of the model. Therefore, the impulse responses do not match.}
 
+
+\newpage
 \section{Auto Correlation of a PRBS signal}
 In order to compute the cross-correlation of two discrete-time signals $u(k)$ and $y(k)$, we use 
 \begin{equation}
@@ -123,21 +127,21 @@ We assume two equal-length vectors for the signals $u$ and $y$. Let the length o
 \end{equation}
 Using these definitions the cross-correlation can be computed in MATLAB using the code snippet shown in Listing~\ref{lst:corr}.
 
-\matlabcode{../matlab/ce1/intcor.m}{Computing a discrete-time cross correlation of the signal u and y in matlab}{lst:corr}
+\matlabcode{../matlab/ce1/intcor.m}{Computing a discrete-time cross correlation of the signal u and y in MATLAB}{lst:corr}
 
-In order to validate our implementation of the cross-correlation function, we used it to compute the autocorrelation two different test signals. 
+In order to validate our implementation of the cross-correlation function, we use it to compute the autocorrelation two different test signals. 
 Figure~\ref{fig:autocorr} shows the autocorrelation function of two different types of signals. 
 On the left hand side (Figure~\ref{fig:autocorrPRBS}) there is a PRBS signal (length of the shift register is 4 and number of periods is 2) and its corresponding autocorrelation function. 
 In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) displays a sinusoidal signal and its autocorrelation function.  
 
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}{0.49\textwidth}
+	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{figures/prbs.pdf}
 		\subcaption{PRBS signal}
 		\label{fig:autocorrPRBS}
 	\end{subfigure}
-	\begin{subfigure}{0.49\textwidth}
+	\begin{subfigure}{0.45\textwidth}
 		\includegraphics[width=\textwidth]{figures/sine.pdf}
 		\subcaption{Sinus signal}
 		\label{fig:autocorrSINUS}
@@ -145,9 +149,11 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 	\caption{Two signals and their corresponding autocorrelation function}\label{fig:autocorr}
 \end{figure}
 
+
+\newpage
 \section{Impulse Response using the Deconvolution Method}\label{section:numdec}
 In this exercise the deconvolution method is used in order to estimate the impulse response of a system.
-We use digital random white noise signal, feed it to the model and record the system's response.
+We use a digital random white noise signal, feed it to the model and record the system's response.
 As an input signal we generate a random signal with the \verb|rand| command (Figure~\ref{fig:inout}).
 In order to create the random signal we use \verb|rand| and squeeze the output to the $[-0.5, 0.5]$ interval.
 Figure~\ref{fig:inout} shows the input and the response of the model.
@@ -168,12 +174,12 @@ or in a matrix form
 	Y = U \Theta\, .
 \end{equation}
 Here, $U$ is an asymmetric (lower) triangular Toeplitz matrix.
-Then, $\Theta$ can then be calculated using
+Then, $\Theta$ can be calculated using
 \begin{equation}
 	\Theta = U^{-1} Y.
 \end{equation}
 However, this approach does not lead to a good solution as the matrix $U$ is poorly conditioned and very close to singular.
-Therefore, the inversion is highly numerically unstable and we don't get a proper result for the discrete impulse response as shown in Figure~\ref{fig:originalimpulse}.
+Therefore, the inversion is highly numerically unstable and we do not get a proper result for the discrete impulse response as shown in Figure~\ref{fig:originalimpulse}.
 
 In order to fix the numerical problem, we shorten the total length of the impulse response by assuming $g(k) = 0$ for $k \geq K$ and we obtain $Y = U_{K} \Theta_{K}$ by removing the last $N-K$ columns of $U$ and the last $N-K$ rows of $\Theta$. 
 This equation can be solved in the least squares sense using the Moore-Penrose pseudo inverse $U_{K}^+$ of $U_{K}$
@@ -207,8 +213,10 @@ We get a 2-norm of the error vector as
 \end{equation}
 of $E(\hat{g}) = 0.22$.
 
+\clearpage
+\newpage
 \section{Impulse Response by Correlation Approach}
-We generate a PRBS signal with $4$ periods in a $7$bit shift register model.
+We generate a PRBS signal with $4$ periods in a $7$ bit shift register model.
 Afterwards, the PRBS signal is applied to the system.
 First we compute the cross-correlation between the input and the output signal $R_{uy}(h)$ and the auto-correlation of the input signal $R_{uu}(h)$ using the previously implemented \texttt{intcor} function and MATLAB's \texttt{xcorr} function. The results are shown in Figure~\ref{fig:cross_correlations}.
 \begin{figure}[h]
@@ -231,9 +239,9 @@ Generally, if $N$ is the signal length, \texttt{intcor} provides a correlation s
 MATLAB's implementation yields a significantly longer signal and the correlation sum is weighted by some function of $h$.
 Because of that, for $h\neq0$ MATLAB's \texttt{xcorr} shows a non-constant value for the PRBS auto-correlation while \texttt{intcor} does.
 Figure~\ref{fig:correlation_impulse_responses} shows the resulting impulse responses in comparison to the ground truth.
-We additionally compared the result of the simplified algorithms for white input signals.
+We additionally compare the result of the simplified algorithms for white input signals.
 As PRBS is not exactly white, we get lower performance for the simplified version and we have to apply numerical deconvolution to improve.
-We implemented the different approaches in the same function, an optional parameter allows to choose one of the methods. 
+We implement the different approaches in the same function, an optional parameter allows to choose one of the methods. 
 Our implementation is presented in Listing~\ref{lst:corr_approach}.
 \begin{figure}[h!]
 	\centering
@@ -261,7 +269,7 @@ We additionally compare the result to the estimate of the numerical deconvolutio
 Note that, in contrast to the previous section, we now apply a PRBS signal instead of random white noise to the system.
 We observe that the error of the numerical deconvolution approach is significantly smaller (approx. half as large) than in the previous section. 
 As we use the same impulse reponse length $K$, the smaller error is due to the better eligible PRBS signal.
-The comparison shows that the correlation approach with the \texttt{xcorr} correlation function shows the lowest error, while the correlation approach with the \texttt{intcor} function performs worst.
+The comparison shows that the correlation approach with the \texttt{xcorr} correlation function creates the lowest error, while the correlation approach with the \texttt{intcor} function performs worst.
 The performance of the previous numerical deconvolution of the input and output signals directly is between the new approaches of this section.
 \begin{table}[h]
 	\centering
@@ -283,22 +291,24 @@ The performance of the previous numerical deconvolution of the input and output 
 \matlabcode{../matlab/ce1/estimate_impulse_response_corr.m}
 {Estimator of the impulse response via the correlation approach.}
 {lst:corr_approach}
+
+\newpage
 \section{Frequency Domain Identification using a Periodic Signal}
 In this task we want to use the Fourier analysis method to identify the frequency response of our model shown in Figure~\ref{fig:testmodel}. 
 For the frequency domain identification we use $8$ periods of a PRBS signal generated by a $8$-bit shift-register.
 Consequently, our total signal length is $N=2040$. The sampling frequency is at $\SI{2}{\hertz}$.
-In order to get a good trade off between the resolution of the estimates (samples per period $M = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose a signal with 8 periods $p=8$ in a 8 bit $n=8$ shift register.
+In order to get a good trade off between the resolution of the estimates (samples per period $M = 2^n -1$) and the impact of measurement errors (number of periods $p$) we decide to choose a signal with 8 periods ($p=8$) in a 8 bit ($n=8$) shift register.
 
-First we compute the Fourier transform of the input and the obtained output signal of our system using the \texttt{fft} command in MATLAB for each period. To reduce the measurement error we average the Fourier series coefficients but we ignore the first period
+First, we compute the Fourier transform of the input and the obtained output signal of our system using the \texttt{fft} command in MATLAB for each period. To reduce the measurement error we average the Fourier series coefficients but we ignore the first period
 \begin{align}\label{eq:fft_average}
 	 Y(n) = \frac{1}{p}\sum\limits_{i=2}^p Y_i (n) \quad \quad n = 1,2,\ldots,M
  \intertext{and} 
 	U(n) = \frac{1}{p}\sum\limits_{i=2}^p U_i (n) \quad \quad n = 1,2,\ldots,M .
 \end{align}
-In addition we calculate the frequency response $ G(e^{j \omega_n}) = Y(n)/ U(n)$. 
+In addition, we calculate the frequency response $ G(e^{j \omega_n}) = Y(n)/ U(n)$. 
 The results can be seen in Figure ~\ref{fig:ffts_diff}.
-In order to determine the effect of noise to the frequency response, we compared the spectra of the system response to a PRBS signal and to a constant-zero input.
-We can observe, that for frequencies higher than $\approx 2.5\frac{rad}{s}$ the signal is hidden in the noise and consequently we expect in poorer identification result in the frequency range higher than $\omega = 2.5\frac{rad}{s}$.
+In order to determine the effect of noise to the frequency response, we compare the spectra of the system response to a PRBS signal and to a constant-zero input.
+We can observe, that for frequencies higher than $\approx 2.5\frac{rad}{s}$ the signal is hidden in the noise and consequently we expect a poorer identification result in the frequency range higher than $\omega = 2.5\frac{rad}{s}$.
 
 \begin{figure}[h!]
 	\centering
@@ -310,7 +320,7 @@ We can observe, that for frequencies higher than $\approx 2.5\frac{rad}{s}$ the 
 		\includegraphics[width=\textwidth]{figures/ffts_snr.pdf}
 		\subcaption{output signal for PRBS input and zero input}\label{fig:ffts_snr}
 	\end{subfigure}
-	\caption{Spectra of different signals. On the left we show the spectra of the input and output signals as well as the transfer function when applying the PRBS signal to the system. On the right we apply to different signals, a PRBS signal and a constant-zero signal, to the system and show the spectra of the system response. We can observe, that for high frequencies the system frequency response hides in the noise.}
+	\caption{Spectra of different signals. On the left we show the spectra of the input and output signals as well as the transfer function when applying the PRBS signal to the system. On the right we apply two different signals, a PRBS signal and a constant-zero signal, to the system and show the spectra of the system response. We can observe, that for high frequencies the system frequency response hides in the noise.}
 \end{figure}
 Afterwards we compute the frequency vector for one period
 \begin{equation}\label{eq:f_vector}
@@ -333,7 +343,7 @@ As we predicted based on the spectra of the output signals in Figure~\ref{fig:ff
 		\subcaption{Identified frequency response and true response with noise block switched on.}
 		\label{fig:resp_noise}
 	\end{subfigure}
-	\caption{Comparison of the frequency response of identified model with the true one}\label{fig:f_resp}
+	\caption{Comparison of the frequency response of the identified model with the true one}\label{fig:f_resp}
 \end{figure}
 \matlabcode{../matlab/ce1/estimate_frequency_response.m}
 {{Compute the frequency response of the system to be identified using an average of Fourier transforms of each period. The first period is skipped as we wait for transience to vanish. Additionally, the frequency vector is computed.}}
@@ -343,7 +353,7 @@ As we predicted based on the spectra of the output signals in Figure~\ref{fig:ff
 \section{Frequency Domain Identification using a Random Signal}
 
 In contrast to the previous section, we now use a complete (non-periodic) random signal.
-The signal should be white and a high energy energy in order to excite all frequencies as much as possible. 
+The signal should be white and should have a high energy in order to excite as much frequencies as possible. 
 For Gaussian noise, samples are more likely to be close to zero than farer away. Therefore, the energy of a Gaussian signal is quite low.
 Furthermore, we have a saturation block in the system.
 Gaussian noise has no real maximum value on the samples generated, sample just become less likely, when their magnitudes become bigger.
@@ -363,7 +373,7 @@ which yields
 	G(e^{jw}) = \frac{\Phi_{yu}(\omega)}{\Phi_{uu}(\omega)}\, ,
 \end{equation}
 where $\Phi_{yu}(\omega)$ and $\Phi_{uu}(\omega)$ denote the Fourier transform of the cross-correlation $R_{yu}$ and the auto-correlation $R_{uu}$, respectively.
-Further, the correlation functions can be multiplied by windowing function in order to remove the noise due to the high variance of the estimates of the correlation function for large $h$.
+Further, the correlation functions can be multiplied by a windowing function in order to remove the noise due to the high variance of the estimates of the correlation function for large $h$.
 Figure~\ref{fig:cross_corr_windowed} shows our implementation of the windowing of the correlation signals.
 We parametrize the window shape by the parameter $M$, which specifies the number of samples to keep in both direction of the $0$ such that the total window has a length of $2M+1$. As the number of samples returned by our correlation function \texttt{intcor} is always odd, we can always guarantee that the maximum value of the window coincides with $h=0$.
 \begin{figure}[h]
@@ -377,8 +387,8 @@ Figure~\ref{fig:resp_spec_ana} shows the results for different window functions 
 We can observe, that the frequency response directly obtained without further processing like windowing or averaging is highly noise.
 The windowed versions yield smoother results.
 While a very narrow window leads to blurring of the details of the spectrum, a wider window increases the number of available fine details.
-At the same time, also noise also becomes more present increasing the width of the window.
-Here, a setting of $M=301$ shows the best results, as is captures the peaks, but is not as wiggly as the results for $M=1001$.
+At the same time, noise also becomes more present increasing the width of the window.
+Here, a setting of $M=301$ shows the best results, as it captures the peaks, but it is not as wiggly as the results for $M=1001$.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{figures/freq_resp_spec_ana.pdf}
@@ -386,16 +396,16 @@ Here, a setting of $M=301$ shows the best results, as is captures the peaks, but
 	\label{fig:resp_spec_ana}
 \end{figure}
 
-After this, we also implemented the averaging over multiple spectra splitting the available data into distinct groups.
+After this, we also implement the averaging over multiple spectra splitting the available data into distinct groups.
 We split the data into $m$ groups such that each group consists of $n = \left\lfloor\frac{N}{m}\right\rfloor$ samples.
 On the one hand, increasing the number of groups promised that noise will average out.
 On the other hand, we also loose frequency resolution increasing the number of groups.
 Figure~\ref{fig:bode_final} shows the final results for the spectral analysis approach.
 We compare the ground truth obtained from the transfer function directly with different methods in a Bode plot.
-As in the previous section, for higher frequencies the accuracy for higher frequency is very low, as the signal hides in the present noise.
+As in the previous section, the accuracy is very low for higher frequency, as the signal hides in the present noise.
 In the higher frequency range, the signal is damped so much that the noise has higher power.
 Even though, the averaged version of the frequency response without windowing shows better results that the non-averaged one, the windowed methods show better performance.
-We achieved the best performance using a hann window with $M=301$ and using $m=2$ groups for averaging.
+We achieve the best performance using a hann window with $M=301$ and using $m=2$ groups for averaging.
 While there is no big difference visible in the magnitude plot, the phase plot shows better performance for the averaged version.
 \begin{figure}[h]
 	\centering
@@ -407,7 +417,7 @@ While there is no big difference visible in the magnitude plot, the phase plot s
 		\includegraphics[width=\textwidth]{figures/bode_1_6.pdf}
 		\subcaption{Bode diagram (zoomed)}
 	\end{subfigure}
-	\caption{Bode diagram comparing the ground truth frequency response and the identified frequency response obtained using different methods. In general, the methods using the window functions achieve better results. The best phase information is obtained using a hann-window and averaging using two group.}
+	\caption{Bode diagram comparing the ground truth frequency response and the identified frequency response obtained using different methods. In general, the methods using the window functions achieve better results. The best phase information is obtained using a hann-window and averaging over two groups.}
 	\label{fig:bode_final}
 \end{figure}
 
