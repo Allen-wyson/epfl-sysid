@@ -156,7 +156,6 @@ In addition, the figure on the right hand side (Figure~\ref{fig:autocorrSINUS}) 
 	\caption{Two signals and their corresponding autocorrelation function}\label{fig:autocorr}
 \end{figure}
 
-
 \newpage
 \section{Impulse Response using the Deconvolution Method}\label{section:numdec}
 In this exercise the deconvolution method is used in order to estimate the impulse response of a system.
@@ -168,7 +167,7 @@ In total, we generate $200s$ of white noise and run the simulation.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[height=5.5cm]{figures/input_output.pdf}
+	\includegraphics[height=5cm]{figures/input_output.pdf}
 	\caption{Random input signal and output of the system}
 	\label{fig:inout}
 \end{figure}
@@ -194,11 +193,7 @@ This equation can be solved in the least squares sense using the Moore-Penrose p
 	\Theta_{K} = (U^{T}_{K} U_{K})^{-1} U^{T}_{K} Y = U_{K}^{+} Y.
 \end{equation}
 In MATLAB we can compute the least squares solution by simply using the backslash operator.
-As the true impulse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:impulseresponse}. The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
-Note that we of course do not know the length of the impulse response for arbitrary systems to be identified. 
-Here, other methods to determine the main time constants or systematic evaluation of different target lengths $K$ must be employed.
-Listing~\ref{lst:numdec} shows our implementation in MATLAB.
-\matlabcode{../matlab/ce1/estimate_impulse_response_numdec.m}{Estimator of the impulse response via numerical deconvolution in MATLAB.}{lst:numdec}
+As the true impulse response is approximately zero after $75 s$, we decided to set $K = 150$. Thus, the obtained impulse response can be seen in Figure~\ref{fig:impulseresponse}. 
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}{.49\textwidth}
@@ -214,7 +209,16 @@ Listing~\ref{lst:numdec} shows our implementation in MATLAB.
 	\caption{Impulse response by deconvolution method with random input signal}\label{fig:deconvolution}
 \end{figure}
 
-We get a 2-norm of the error vector as
+The result is similar to the true impulse response of the signal, which we compute using the \verb|impulse| command in MATLAB.
+We want the impulse response, resulting from application of a Kronecker delta to the system. 
+As the MATLAB impulse command computes the impulse response for a unit impulse of duration $1\si{\second}$ we need to scale the resulting impulse response multiplying by the sampling period. Listing~\ref{lst:ground_truth} shows how we compute the ground truth impulse response.
+Note that we of course do not know the length of the impulse response for arbitrary systems to be identified. 
+Here, other methods to determine the main time constants or systematic evaluation of different target lengths $K$ must be employed.
+Listing~\ref{lst:numdec} shows our implementation of the numerical deconvolution in MATLAB.
+\matlabcode{../matlab/ce1/ground_truth_imp_resp.m}{Computation of the ground truth impulse response.}{lst:ground_truth}
+\matlabcode{../matlab/ce1/estimate_impulse_response_numdec.m}{Estimator of the impulse response via numerical deconvolution in MATLAB.}{lst:numdec}
+
+\noindent We get a 2-norm of the error vector as
 \begin{equation}\label{eq:2-norm}
 	E(\hat{g}) = \sqrt{\sum\limits_{k=0}^K \left(g(k) - \hat{g}(k)\right)^2}
 \end{equation}
