@@ -50,7 +50,7 @@
 
 \begin{titlepage}
 
-\title{CE-1: Nonparametric Methods} % Title
+\title{CE-2: Parametric Identification Methods} % Title
 \author{Arne Sachtler \\ Julia Krottenthaler}		% Author
 \date{\today}								% Date
 
@@ -88,17 +88,94 @@
 
 \tableofcontents
 
-\section{Step Response}
+\newpage
+\section{Identification of a laser beam stabilizing system}
 
-Figure~\ref{fig:testmodel} shows the modeled system, which will be used for the system identification exercises.
-\textcolor{red}{TODO: is this a reasonable choice question}
-Figure~\ref{fig:responses} shows the step and impulse response for the system. On the left hand side the noise is included, the right hand side shows the responses without noise.
+\subsection{FIR model identification}
+
+In this section we identify a finite impulse response (FIR) model using the time-domain data \texttt{laserbeamdataN.mat}. This file contains the input $u$ and the output signal $y$ of a laser beam stabilizing system shown in Figure~\ref{fig:system} with a set of $ N = 500 $ data.  
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=4cm]{figures/system.png}
+	\caption{Laser beam stabilizing system }\label{fig:system}
+\end{figure}
+
+We assume a FIR model of the following form:
+\begin{equation}\label{eq:FIRmodel}
+	\hat{y}(k,\theta) = b_1 u(k-1) + \cdots + b_m u(k-m) \qquad m = 1,2,\ldots,50.
+\end{equation}
+
+This model can be rewritten as follows:
+
+\begin{align}\label{eq:FIRrewritten}
+	 \hat{y} (k,\theta) & = \phi^{T} (k) \theta 
+ \intertext{where}
+ 	 \phi^{T} (k) & = \left[ u(k-1), u(k-2), \ldots, u(k-m) \right] \\
+ 	 \theta^T & = \left[ b_1, b_2, \ldots, b_m \right] .
+\end{align}
+
+First, we compute the parameter vector $\hat{\theta}$ using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$:
+
+\begin{equation}\label{eq:FIRmodel}
+	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
+\phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
+\end{equation}
+
+Here, $\pmb{\phi}$ is an asymmetric (lower) triangular Toeplitz matrix, which we generate with the MATLAB \texttt{toeplitz} command.
+In MATLAB we can solve this least squares problem by simply using the backslash operator. 
+
+Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=5.5cm]{figures/output.png}
+	\caption{Output of the system}\label{fig:output}
+\end{figure}
+
+In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. We therefore consider a loss function as 
+\begin{equation}\label{eq:J}
+	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
+\end{equation}
+Using the MATLAB command \texttt{norm} and squaring the result we obtain $ J(\theta) \approx 6.92 \cdot 10^{-6}$. 
+
+As we assume that the noise is white, we obtain an unbiased estimate of the noise variance by
+\begin{equation}\label{eq:sigma}
+	\hat{\sigma}_{noise}^{2} = \frac{1}{N-m} J(\hat{\theta}) .
+\end{equation}
+
+Using the available data this equation yields to $ \hat{\sigma}_{noise} \approx 1.24 \cdot 10^{-4} $.
+
+The covariance of the parameter estimates can then be obtained as
+\begin{equation}\label{eq:cov}
+	cov[\hat{\theta}] = \hat{\sigma}_{noise}^2 \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} = \hat{\sigma}_{noise}^2 \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} .
+\end{equation}
+
+The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is the standard deviation $ \sigma $, which we use for the $ \pm 2 \sigma $ confidence interval in Figure~\ref{fig:fir_response}. This figure shows us the finite impulse response of the system.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=5.5cm]{figures/fir_response.png}
+	\caption{Finite impulse response of the system}\label{fig:fir_response}
+\end{figure}
 
 
 
+\newpage
+\subsection{ARX model identification}
 
+\newpage
+\subsection{State-space model identification}
 
+\newpage
+\section{Parametric Identification of an Active Suspension System}
 
+\newpage
+\subsection{Order estimation}
 
+\newpage
+\subsection{Parametric identification}
 
+\newpage
+\subsection{Model validation}
 \end{document}
