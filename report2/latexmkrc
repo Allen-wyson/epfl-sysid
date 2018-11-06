@@ -1,0 +1,5 @@
+$pdf_mode = 1;
+$clean_ext = 'run.xml';
+$pdf_previewer = 'start evince > /dev/null 2> /dev/null';
+
+system('./topdf.py figures')
