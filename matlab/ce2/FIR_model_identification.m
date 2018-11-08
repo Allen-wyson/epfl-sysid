@@ -23,6 +23,8 @@ function [yh,theta,sigma] = FIR_model_identification(input, output, m)
 
     N = size(input, 1);
     var_est = 1/(N-m) * J;
+    
+    %% Standard deviation
 
     covar = var_est * inv(phi' * phi);
     sigma = sqrt(diag(covar));
