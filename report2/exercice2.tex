@@ -91,7 +91,7 @@
 \newpage
 \section{Identification of a laser beam stabilizing system}
 
-\subsection{FIR model identification}
+\subsection{FIR model identification}\label{sec:FIR}
 
 In this section we identify a finite impulse response (FIR) model using the time-domain data \texttt{laserbeamdataN.mat}. This file contains the input $u$ and the output signal $y$ of a laser beam stabilizing system shown in Figure~\ref{fig:system} with a set of $ N = 500 $ data.  
 
@@ -125,12 +125,12 @@ First, we compute the parameter vector $\hat{\theta}$ using the least squares al
 Here, $\pmb{\phi}$ is an asymmetric (lower) triangular Toeplitz matrix, which we generate with the MATLAB \texttt{toeplitz} command.
 In MATLAB we can solve this least squares problem by simply using the backslash operator. 
 
-Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output}.
+Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_fir}.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/output.png}
-	\caption{Output of the system}\label{fig:output}
+	\caption{Output of the system}\label{fig:output_fir}
 \end{figure}
 
 In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. We therefore consider a loss function as 
@@ -161,8 +161,70 @@ The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is th
 
 \matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
 
+\clearpage
+
+
 \newpage
 \subsection{ARX model identification}
+We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous chapter (\texttt{laserbeamdataN.mat}, $N = 500$). Therefore, we use the following predictor:
+
+\begin{align}\label{eq:arx}
+	\hat{y}(k,\theta) & = -a_1 y(k-1) - a_2 y(k-2) + b_1 u(k-1) + b_2u (k-2) = \phi^T(k) \theta
+	\intertext{where}
+ 	 \phi^{T} (k) & = \left[ -y(k-1), -y(k-2), u(k-1), u(k-2) \right] \\
+ 	 \theta^T & = \left[ a_1, a_2, b_1, b_2\right] .
+\end{align}
+
+Using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$, we compute, like we did it already in Section~\ref{sec:FIR}, the parameter vector $\hat{\theta}$:
+
+\begin{equation}\label{eq:ARXmodel}
+	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
+\phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
+\end{equation}
+
+This least-squares problem is solved in MATLAB with the backslash-operator.
+
+The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed by 
+$\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=5.5cm]{figures/output_arx.png}
+	\caption{Output of the identified ARX model compared to the measured output }\label{fig:output_arx}
+\end{figure}
+
+In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. Hence, we consider a loss function as 
+\begin{equation}\label{eq:J}
+	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
+\end{equation}
+Using the MATLAB command \texttt{norm} and squaring the result we obtain $ J(\theta) \approx 2.17 \cdot 10^{-5}$. 
+
+Afterwards we compute the output of the identified model $y_m(k)$ using the MATLAB command \texttt{lsim}. On that point, we generate a transfer function with the MATLAB command \texttt{tf}. Thus, the obtained output $y_m(k)$ compared to the measured output $y(k)$ can be seen in Figure~\ref{fig:output_lsim2}.
+The resulting sum of the squares of the error is then $ J(\theta) \approx 1.14 \cdot 10^{-4}$. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=5.5cm]{figures/output_lsim2.png}
+	\caption{Output of the second order \texttt{lsim} model compared to the measured output}\label{fig:output_lsim2}
+\end{figure}
+
+
+
+It is remarkable that the value of the output of the identified model is much smaller than the measured output. In order to achieve better results, we raise the order of our model to $3$, with
+
+\begin{align}\label{eq:arx}
+ 	 \phi^{T} (k) & = \left[ -y(k-1), -y(k-2), -y(k-3), u(k-1), u(k-2), u(k-3) \right] \\
+ 	 \theta^T & = \left[ a_1, a_2, a_3, b_1, b_2, b_3\right] .
+\end{align}
+
+This model approaches the real output values much better, as it can be seen in Figure \ref{fig:output_lsim3}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=5.5cm]{figures/output_lsim3.png}
+	\caption{Output of the third order \texttt{lsim} model compared to the measured output}\label{fig:output_lsim3}
+\end{figure}
+
 
 \newpage
 \subsection{State-space model identification}
