@@ -8,28 +8,23 @@ close all;
 load laserbeamdataN.mat
 N = size(u, 1);
 
-
-
-%[yh,theta,sigma] = FIR_model_identification(input, output, m)
 %% Parameter vector
 
 fsum = zeros();
-phi2= zeros(N,4);
+phi = zeros(N,4);
 
+phi(2, :) = [-y(1), 0, u(1), 0];
 for k=3:N
-    phi = [-y(k-1);-y(k-2);u(k-1);u(k-2)];
-   
-    phi2(k,:)= phi;
-    
-    
+    phi(k,:)= [-y(k-1),-y(k-2),u(k-1),u(k-2)];
 end
 
-theta = phi2 \ y;
-
-
-yh = phi2 * theta;
+theta = phi \ y;
+yh = phi * theta;
 
 diff = yh-y;
+
+J = norm(diff)^2;
+disp(sprintf("Loss: %f", J))
 
 figure;
 plot(diff);
