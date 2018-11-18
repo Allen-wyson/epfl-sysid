@@ -5,28 +5,22 @@ function [yh,theta,sigma, J] = FIR_model_identification(input, output, m)
     % yh: predictor for output
     % theta: parameter vector
     % sigma: standard deviation of the parameter estimates
+    % J: loss
 
-    %% Paramter vector
-    
     tpl = zeros(m,1);
     tpl(1,1) = input(1,1);
-
     phi = toeplitz(input, tpl); % Toeplitz matrix phi
-    theta = phi \ output; % backslash operator uses Moore-Penrose pseudo inverse
+    theta = phi \ output;  
 
     %% Predicted output and loss function
-
     yh = phi * theta; 
     J = (norm(output-yh))^2;
 
     %% Estimate noise variance
-
     N = size(input, 1);
     var_est = 1/(N-m) * J;
     
-    %% Standard deviation
-
+    %% Standard deviation per parameter
     covar = var_est * inv(phi' * phi);
     sigma = sqrt(diag(covar));
-
 end

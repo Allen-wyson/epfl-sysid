@@ -86,13 +86,11 @@
 	\vfill
 \end{titlepage}
 
-\tableofcontents
+% \tableofcontents
+% \newpage
 
-\newpage
 \section{Identification of a Laser Beam Stabilizing System}
-
 \subsection{FIR Model Identification}\label{sec:FIR}
-
 In this section we identify a finite impulse response (FIR) model using the time-domain data \texttt{laserbeamdataN.mat}. This file contains the input $u$ and the output signal $y$ of a laser beam stabilizing system shown in Figure~\ref{fig:system} with a set of $ N = 500 $ data.  
 
 \begin{figure}[h]
@@ -161,10 +159,6 @@ The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is th
 
 \matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
 
-\clearpage
-
-
-\newpage
 \subsection{ARX Model Identification}
 We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous chapter (\texttt{laserbeamdataN.mat}, $N = 500$). Therefore, we use the following predictor
 \begin{align}\label{eq:arx}
@@ -188,51 +182,34 @@ Using this, we obtain $ J(\theta) \approx 2.17 \cdot 10^{-5}$.
 The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using 
 $\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
 Note that this predictor (in contrast to the simulated transfer function below) uses the measured past value of the output.
+Afterwards we compute the output of the identified model $y_m(k)$ using the MATLAB command \texttt{lsim} and the transfer function of the model
+\begin{equation}
+	G_0(q) = \frac{b_1 q^{-1} + b_2 q^{-2}}{1 + a_1 q^{-1} + a_2 q^{-2}}
+	= \frac{0.0183q^{-1} + 0.0731q^{-2}}{1 - 1.5483q^{-1} + 0.6484q^{-2}}\, .
+\end{equation}
+We generate a transfer function object using the MATLAB command \texttt{tf} and simulate the output given the input $u(k)$ and we plot the simulated output resulting from the second order model with the measured output in Figure~\ref{fig:output_lsim2}.
+The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \approx 1.14 \cdot 10^{-4}$. 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[height=5.5cm]{figures/output_arx.pdf}
-	\caption{Output of the identified ARX model compared to the measured output }\label{fig:output_arx}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/output_arx.pdf}
+		\subcaption{Comparison of measured output $y$ and predicted output $\hat{y}$ using the past measured output.}\label{fig:output_arx}
+	\end{subfigure}\hfill
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/output_lsim2.pdf}
+		\subcaption{Comparison of measured output $y$ and predicted output $y_m$ using only the input and a transfer function model.}\label{fig:output_lsim2}
+	\end{subfigure}
+	\caption{Comparison of predicted and measured output. On the left: comparison with predictor using the past measured output. On the right: comparison only using the input data and the simulated transfer function model.}
 \end{figure}
 
-Afterwards we compute the output of the identified model $y_m(k)$ using the MATLAB command \texttt{lsim}. On that point, we generate a transfer function with the MATLAB command \texttt{tf}. Thus, the obtained output $y_m(k)$ compared to the measured output $y(k)$ can be seen in Figure~\ref{fig:output_lsim2}.
-The resulting sum of the squares of the error is then $ J(\theta) \approx 1.14 \cdot 10^{-4}$. 
+\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique.}{lst:FIR}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[height=5.5cm]{figures/output_lsim2.pdf}
-	\caption{Output of the second order \texttt{lsim} model compared to the measured output}\label{fig:output_lsim2}
-\end{figure}
-
-
-
-It is remarkable that the value of the output of the identified model is much smaller than the measured output. In order to achieve better results, we raise the order of our model to $3$, with
-
-\begin{align}\label{eq:arx}
- 	 \phi^{T} (k) & = \left[ -y(k-1), -y(k-2), -y(k-3), u(k-1), u(k-2), u(k-3) \right] \\
- 	 \theta^T & = \left[ a_1, a_2, a_3, b_1, b_2, b_3\right] .
-\end{align}
-
-This model approaches the real output values much better, as it can be seen in Figure \ref{fig:output_lsim3}.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[height=5.5cm]{figures/output_lsim3.png}
-	\caption{Output of the third order \texttt{lsim} model compared to the measured output}\label{fig:output_lsim3}
-\end{figure}
-
-\newpage
 \subsection{State-space Model Identification}
 
 \newpage
 \section{Parametric Identification of an Active Suspension System}
-
-\newpage
 \subsection{Order Estimation}
-
-\newpage
 \subsection{Parametric Identification}
-
-\newpage
 \subsection{Model Validation}
 \end{document}

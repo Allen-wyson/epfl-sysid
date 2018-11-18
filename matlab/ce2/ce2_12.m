@@ -8,35 +8,14 @@ close all;
 load laserbeamdataN.mat
 N = size(u,1);
 
-%% Parameter vector
+[yh, ysim, theta, sys, J, J_tf] = ARX_model_identification(u, y, 1);
 
-phi = zeros(N,4);
-phi(2,:) = [-y(1), 0, u(1), 0];
-for k=3:N
-    phi(k,:)= [-y(k-1),-y(k-2),u(k-1),u(k-2)];
-end
+disp(sprintf("Prediction loss: %f", J));
+disp(sprintf("Transfer function model loss: %f", J_tf));
 
-theta = phi \ y;
+[yh_iv, ysim_iv, theta_iv, sys_iv, J_iv, J_tf_iv] = ARX_model_identification(u, y, 100);
 
-%% Output and loss function
-
-yh = phi * theta;
-
-diff = yh-y;
-
-J = norm(diff)^2;
-
-
-%% Model with lsim
-
-f_sampling = 1e3;
-t = 0:(1/f_sampling):(N-1)*(1/f_sampling);
-z = tf('z', 1/f_sampling);
-sys = (theta(3)*(1/z) + theta(4)*(1/z^2)) / (1 + theta(1)*(1/z) + theta(2)*(1/z^2));
-
-ysim = lsim(sys, u, t);
-
-J2 = norm(y-ysim)^2;
+disp(sprintf("Transfer function model loss (IV): %f", J_tf_iv));
 
 figure;
 stairs(y,'r');
@@ -57,3 +36,11 @@ legend({'measured output y(k)', 'predicted output $y_m(k)$'},'Interpreter','late
 title('Second order model with lsim');
 
 
+figure;
+stairs(y, 'r');
+hold on
+stairs(ysim, 'g');
+stairs(ysim_iv, 'b');
+grid;
+legend({'measured output y(k)', 'predicted output $y_m(k)$','predicted output $y_{m,iv}(k)$'},'Interpreter','latex');
+title('Second order model with lsim');
