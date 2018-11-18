@@ -1,4 +1,4 @@
-function [yh,theta,sigma] = FIR_model_identification(input, output, m) 
+function [yh,theta,sigma, J] = FIR_model_identification(input, output, m) 
     % input: input signal
     % output: output signal
     % m: number of parameters
