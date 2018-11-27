@@ -1,0 +1,64 @@
+close all;
+clear all;
+
+load CE2.mat
+N = size(u,1);
+Z = iddata(y,u,0.03);
+
+
+
+for n= 1:10
+    M = arx(Z,[n n 1]);
+    J(n) = M.EstimationInfo.LossFcn;
+end
+
+plot(J);
+
+% zero-pole cancellation
+
+%func = [@armax,@iopzplot]
+
+
+M5 = armax(Z,[5 5 5 1]);
+figure;
+h = iopzplot(M5);
+title('n=5');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
+
+M6 = armax(Z,[6 6 6 1]);
+figure;
+h = iopzplot(M6);
+title('n=6');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
+
+figure;
+impulse(M6)
+
+%richtig
+M7 = armax(Z,[7 7 7 1]);
+figure;
+h = iopzplot(M7);
+title('n=7');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
+
+
+M8 = armax(Z,[8 8 8 1]);
+figure;
+h = iopzplot(M8);
+title('n=8');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
+
+M9 = armax(Z,[9 9 9 1]);
+figure;
+h = iopzplot(M9);
+title('n=9');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
+
+
+
+
