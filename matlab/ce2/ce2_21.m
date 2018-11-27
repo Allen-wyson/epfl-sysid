@@ -59,6 +59,12 @@ title('n=9');
 axis([-1 1 -1 1]);
 showConfidence(h,2);
 
+Model_of_choice = M7;
+
+figure;
+errorbar(0:1:size(Model_of_choice.b, 2)-1, Model_of_choice.b, 2*Model_of_choice.db);
+grid
+
 
 
 
