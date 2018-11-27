@@ -25,7 +25,8 @@ U_orth = eye(N) - U' * inv(U*U') * U;
 Q = Y * U_orth;
 singular_values = svd(Q);
 
-n = 3; % TODO: make this automatically
+n = sum(cumsum(singular_values)>=0.95*(sum(singular_values))); 
+disp(sprintf("Estimated order of the system: %d", n))
 O = Q(:,1:n);
 
 C = O(1,:);
@@ -34,12 +35,12 @@ A = pinv(O(1:(r-1),:)) * O(2:r,:);
 q = 0;
 F = C*inv(q*eye(n) - A);
 uf = zeros(N, n);
-for i=1:N
-	uf(i,:) = F*u(i);
+for i=4:N
+	uf(i,:) = F*u(i-3);
 end
-B = pinv(uf)*y;
+B = pinv(uf) * y;
 D = 0;
-sys = ss(A,B,C,D,-1);
+sys = ss(A,B,C,D,1e-3);
 
 
 figure
@@ -49,7 +50,7 @@ title 'Singular values of Q';
 figure
 lsim(sys,u);
 hold on
-plot(y, 'r')
-
-
+stairs(0:1e-3:(N-1)*1e-3, y, 'r')
+legend("simulated", "input data")
+grid
 
