@@ -31,8 +31,25 @@ O = Q(:,1:n);
 C = O(1,:);
 A = pinv(O(1:(r-1),:)) * O(2:r,:);
 
+q = 0;
+F = C*inv(q*eye(n) - A);
+uf = zeros(N, n);
+for i=1:N
+	uf(i,:) = F*u(i);
+end
+B = pinv(uf)*y;
+D = 0;
+sys = ss(A,B,C,D,-1);
+
 
 figure
 plot(singular_values);
 title 'Singular values of Q';
+
+figure
+lsim(sys,u);
+hold on
+plot(y, 'r')
+
+
 
