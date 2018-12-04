@@ -35,22 +35,26 @@ A = pinv(O(1:(r-1),:)) * O(2:r,:);
 q = 0;
 F = C*inv(q*eye(n) - A);
 uf = zeros(N, n);
-for i=4:N
-	uf(i,:) = F*u(i-3);
+for i=(n+1):N
+	uf(i,:) = F*u(i-n);
 end
 B = pinv(uf) * y;
 D = 0;
 sys = ss(A,B,C,D,1e-3);
-
+[y_sys, t_sys, x_sys] = lsim(sys, u);
 
 figure
 plot(singular_values);
 title 'Singular values of Q';
 
 figure
-lsim(sys,u);
+plot(t_sys, y_sys);
 hold on
 stairs(0:1e-3:(N-1)*1e-3, y, 'r')
 legend("simulated", "input data")
 grid
+
+figure
+plot(t_sys, x_sys);
+legend("x_1", "x_2", "x_3")
 

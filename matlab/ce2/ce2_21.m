@@ -15,9 +15,12 @@ end
 plot(J);
 
 % zero-pole cancellation
-
-%func = [@armax,@iopzplot]
-
+M4 = armax(Z,[4 4 4 1]);
+figure;
+h = iopzplot(M4);
+title('n=4');
+axis([-1 1 -1 1]);
+showConfidence(h,2);
 
 M5 = armax(Z,[5 5 5 1]);
 figure;
@@ -59,12 +62,14 @@ title('n=9');
 axis([-1 1 -1 1]);
 showConfidence(h,2);
 
-Model_of_choice = M7;
+Model_of_choice = M4;
 
 figure;
 errorbar(0:1:size(Model_of_choice.b, 2)-1, Model_of_choice.b, 2*Model_of_choice.db);
 grid
 
-
+comb = struc(1:10, 1:10, 1:10);
+Marx = arxstruc(Z,Z,comb);
+orderarx = selstruc(Marx);
 
 
