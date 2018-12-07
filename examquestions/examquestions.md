@@ -2,6 +2,8 @@
 
 ## 1. Compare impulse, step, sum of sinusoids, discrete random processes and PRBS signals in terms of their spectra and their degrees of excitation.
 
+- __Impulse__: Constant 1 spectrum and excitation in all frequencies, infinite degree of excitation. The signal has very low energy as it inputs zero energy everywhere except at $`k=0`$.
+
 ## 2. How can we find the impulse response of a system using the correlation approach?
 
 ## 3. How is a PRBS generated? What is the period of a PRBS? How can its richness at low frequencies be improved?
@@ -16,11 +18,19 @@
 
 ## 8. Define the ARX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
+![ARX](arx.png)
+
 ## 9. Define the ARMAX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
+
+![ARMAX](armax.png)
 
 ## 10. Define the OE structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
+![OE](oe.png)
+
 ## 11. Define the BJ structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
+
+![BJ](bj.png)
 
 ## 12. Explain the principle of the IV method to obtain asymptotically unbiased estimates. How can the IV vector be chosen?
 
