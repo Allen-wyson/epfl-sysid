@@ -20,7 +20,7 @@ inputs zero energy everywhere except at $`k=0`$.
 
 === 8. Define the ARX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
-image:arx.png
+image:arx.png[ARX]
 
 === 9. Define the ARMAX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
