@@ -1,10 +1,15 @@
 == System Identification - Exam Questions
+:stem: latexmath
 
 === 1. Compare impulse, step, sum of sinusoids, discrete random processes and PRBS signals in terms of their spectra and their degrees of excitation.
 
 * *Impulse*: Constant 1 spectrum and excitation in all frequencies,
 infinite degree of excitation. The signal has very low energy as it
-inputs zero energy everywhere except at $`k=0`$.
+inputs zero energy everywhere except at latexmath:[k=0].
+* *Step*: In theory the degree of excitation is also infinite. However, the step signal puts more energy in low frequency and the energy per frequency quickly decays over the frequency axis. In consequence if a system is excited by a step signal, very low frequencies and the DC part are strongly excited while high frequency are approximately not excited at all.
+* *Sum of Sinusoids*: The degree of excitation is n, where n is the number of sinusoids summed. The spectrum is discrete and hand specific peaks at the frequencies of the summed sinusoids.
+* *Discrete Random Processes*: Discrete random processes have also infinite degree of excitation as the spectrum is continuous. The spectrum depends on the covariance of the noise.
+* *PRBS*: The signal is periodic and the spectrum is therefore discrete and the degree of excitation is finite. The spectrum of a pure (non-divided) PRBS signal is flat and it can be shaped using frequency dividers.
 
 === 2. How can we find the impulse response of a system using the correlation approach?
 
@@ -24,15 +29,15 @@ image:arx.png[ARX]
 
 === 9. Define the ARMAX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
-image:armax.png
+image:armax.png[ARMAX]
 
 === 10. Define the OE structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
-image:oe.png
+image:oe.png[OE]
 
 === 11. Define the BJ structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
-image:bj.png
+image:bj.png[BJ]
 
 === 12. Explain the principle of the IV method to obtain asymptotically unbiased estimates. How can the IV vector be chosen?
 
