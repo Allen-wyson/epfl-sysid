@@ -32,6 +32,8 @@ O = Q(:,1:n);
 C = O(1,:);
 A = pinv(O(1:(r-1),:)) * O(2:r,:);
 
+
+% TODO: fix the implementation here. There is no q. The matrix F should actually be a transfer function
 q = 0;
 F = C*inv(q*eye(n) - A);
 uf = zeros(N, n);

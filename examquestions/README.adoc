@@ -13,12 +13,13 @@ inputs zero energy everywhere except at latexmath:[k=0].
 
 === 2. How can we find the impulse response of a system using the correlation approach?
 
+The system is excited with a suitable input signal and the response of the system is recorded. Then, the autocorrelation of the input signal and the cross-correlation of the input and response signal is estimated.
+In order to compute the estimate for the impulse response latexmath:[g(h)], one of the following approaches is used dependent on whether the input signal is white or not.
 For white noise latexmath:[g(h) = \frac{\hat{R}_{yu}(h)}{\hat{R}_{uu}(0)}], else if the input signal is not white numerical deconvolution using the following relation:
 [latexmath]
 +++++++++++
 R_{yu}(h) = \sum\limits_{j=0}^{K-1} g(j) R_{uu}(h - j)
 +++++++++++
-
 In the above equations latexmath:[\hat{R}_{uu}] denote the estimated autocorrelation of the input signal and latexmath:[\hat{R}_{yu}] denotes the estimated cross-correlation between the input and output signal.
 
 === 3. How is a PRBS generated? What is the period of a PRBS? How can its richness at low frequencies be improved?
