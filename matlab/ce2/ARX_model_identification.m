@@ -8,7 +8,7 @@ function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iteratio
     % J_tf: prediction loss of the identified transfer function
     N = size(u,1);
 
-    function [phi] = create_phi_matrix(in, out)
+    function [phi] = create_phi_matrix(u, y)
         phi = zeros(N,4);
         phi(2,:) = [-y(1), 0, u(1), 0];
         for k=3:N
