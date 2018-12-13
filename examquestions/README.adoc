@@ -35,6 +35,22 @@ However, at larger model capacities also the *variance* in the parameter estimat
 
 === 5. Explain the principle of Fourier analysis. Name three major errors in Fourier analysis. Explain how the truncation error can be reduced.
 
+The objective of Fourier analysis is to identify the frequency response latexmath:[G(j\omega)] of the test system. Therefore, test signal is applied to the test system and the recorded system response is analyzed.
+[latexmath]
++++++++++++
+G(j\omega) = \frac{Y(j\omega)}{U(j\omega)}
++++++++++++
+
+==== Errors are:
+* *Sampling Error:* we identify latexmath:[G(e^{j\omega})] instead of latexmath:[G(j\omega)]
+* *Measurement Error:* the measured output is not the true output
+* *Truncation Error:* The Fourier transform uses and infinite sum. We use a finite one.
+
+==== Reduction of Truncation Error
+* excitation with energy signal and wait for transience to vanish after the end of the signal
+* periodic signal -> no truncation error
+* windowing
+
 === 6. Explain how the frequency response can be identified using the spectral analysis method. How can the estimates be improved by averaging? How can the estimates be improved with windowing? Discuss the choice of the window's width.
 
 === 7. Why are we interested in closed-loop identification? What is the major problem? How can a good model be obtained by spectral analysis?
