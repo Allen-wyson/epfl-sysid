@@ -62,8 +62,11 @@ where latexmath:[\Phi_{yu}(\omega_n) = \sum\limits_{h=0}^{N-1} \hat{R}_{yu} e^{-
 
 By using less frequency bins, the available data can be split to compute the less-resolution outcome of the spectral analysis of subsequences of the data. Then, the results of multiple runs can be averaged to reduce the effect of noise. Averaging is done on the power spectral density functions, no on latexmath:[G(e^{j\omega})]. The estimates of the auto- and cross-correlation functions are usually the more inaccurate the more you move away from h=0. Therefore, a windowing function filtering out the less-accurate parts of the correlation functions can be used to improve the results of the spectral analysis method. The window should b as small as possible to filter out the inaccurate parts, but not too small to minimize the effect of spectrum-smearing by the Fourier-transform of the window.
 
-
 === 7. Why are we interested in closed-loop identification? What is the major problem? How can a good model be obtained by spectral analysis?
+There are certain points why we would perform a closed-loop identification. There is a class of instable systems that is stabilized in closed-loop operation with a controller. (Think of applying PRBS in open-loop operation to an inverse pendulum ;)) Also, there exist systems with integrators creating an output drift in open-loop. Also, when identifying a system in closed-loop it is excited in the frequencies relevant for controller design, so we concentrate the frequency distribution of the system excitation during data acquisition in the relevant region, automatically.
+
+The main problem in closed-loop is, that the input of the test system is correlated with feedback and spectral analysis can therefore not be applied directly.
+The identified model resulting from closed-loop identification may be appropriate for controller design, but in general it might not be very useful for other tasks like simulation or gaining physical insight in the model structure.
 
 === 8. Define the ARX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
