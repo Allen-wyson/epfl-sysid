@@ -24,7 +24,14 @@ In the above equations latexmath:[\hat{R}_{uu}] denote the estimated autocorrela
 
 === 3. How is a PRBS generated? What is the period of a PRBS? How can its richness at low frequencies be improved?
 
+image:prbs.png[PRBS]
+
+the (maximum) period is latexmath:[M = 2^n - 1]. For richer signal at low frequencies: add a frequency divider between the PRBS generator and the test system.
+
 === 4. Explain the principle of bias-variance trade-off in estimation problems.
+
+The bias-variance trade-off is present in all estimation problems with noisy data. Basically, the intuition is when the model capacity is low (low amount of parameters) the model has not enough capacity to fit the data and there will be always some error due to the modelling with a low capacity model called *bias*. At the same time for reasonable assumptions on the noise the variance of the parameter estimates will be low as the system will be highly overdetermined. On the other hand, when the model capacity is large, the model has enough capacity to fit the data and the bias is low.
+However, at larger model capacities also the *variance* in the parameter estimates is higher as the estimates stronger respond to the noise realization. We can decompose the fit-error into variance, bias and noise, where bias and variance depend on the model chosen and the noise term is constant.
 
 === 5. Explain the principle of Fourier analysis. Name three major errors in Fourier analysis. Explain how the truncation error can be reduced.
 
