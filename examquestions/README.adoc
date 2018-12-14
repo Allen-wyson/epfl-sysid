@@ -33,6 +33,8 @@ the (maximum) period is latexmath:[M = 2^n - 1]. For richer signal at low freque
 The bias-variance trade-off is present in all estimation problems with noisy data. Basically, the intuition is when the model capacity is low (low amount of parameters) the model has not enough capacity to fit the data and there will be always some error due to the modelling with a low capacity model called *bias*. At the same time for reasonable assumptions on the noise the variance of the parameter estimates will be low as the system will be highly overdetermined. On the other hand, when the model capacity is large, the model has enough capacity to fit the data and the bias is low.
 However, at larger model capacities also the *variance* in the parameter estimates is higher as the estimates stronger respond to the noise realization. We can decompose the fit-error into variance, bias and noise, where bias and variance depend on the model chosen and the noise term is constant.
 
+By increasing the number of parameters the bias error is decreased but the variance error augments. Therefore, having a small bias may lead to a better MSE.
+
 === 5. Explain the principle of Fourier analysis. Name three major errors in Fourier analysis. Explain how the truncation error can be reduced.
 
 The objective of Fourier analysis is to identify the frequency response latexmath:[G(j\omega)] of the test system. Therefore, test signal is applied to the test system and the recorded system response is analyzed.
@@ -72,6 +74,22 @@ The identified model resulting from closed-loop identification may be appropriat
 
 image:arx.png[ARX]
 
+the ARX model assumes a system transfer function of the form latexmath:[\frac{q^{-1} B(q^{-1})}{A(q^{-1})}] and a filtered white noise, filtered by latexmath:[\frac{1}{A(q^{-1})}]. The ARX predictor is then
+[latexmath]
++++++++++++
+\hat{y}(k, \theta) = -a_1 y(k-1) - \ldots - a_n y(k-n) + b_1 u(k-d-1) + \ldots + b_m (k-d-m) = \phi^\top (k) \theta
++++++++++++
+and we have the general least squares fit criterion
+[latexmath]
++++++++++++
+J(\theta) = \sum\limits_{k=1}^{N} [y(k) - \hat{y}(k, \theta)]^2 .
++++++++++++
+And therefore only a linear least squares objective is to be solved.
+
+Usually, the estimates obtained by ARX are biased as the noise model is not applicable in most of the cases. ARX only gives unbiased estimates if the noise model latexmath:[n(k) = \frac{e(k)}{A(q^-1)}] is present in the system structure or if the instrumental variables method (IV) is used in order to obtain asymptotically unbiased estimates.
+
+ARX assumes that the noise model is latexmath:[H_0 (q^{-1}) = \frac{1}{A(q^{-1})}].
+
 === 9. Define the ARMAX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
 image:armax.png[ARMAX]
@@ -88,7 +106,60 @@ image:bj.png[BJ]
 
 === 13. Explain the different steps of the state-space identification method: when are the states measured and when are they estimated using the subspace projection method.
 
+There are different strategies for state-space identification. First let's consider that we have the state latexmath:[x(k)] available either because their measured or by other magical reasons. Then, we can rewrite the well-known state-space model
+[latexmath]
++++++++++++
+x(k+1) = Ax(k) + Bu(k) + w(k)\\
+y(k) = Cx(k) + Du(k) + e(k)
++++++++++++
+into a single expression
+[latexmath]
++++++++++++
+Y(k) = \Theta \varphi (k) + E(k)
++++++++++++
+where
+[latexmath]
++++++++++++
+Y(k) = \begin{bmatrix}x(k+1)\\y(k)\end{bmatrix} \qquad \Theta = \begin{bmatrix}A&B\\C&D\end{bmatrix} \, .
++++++++++++
+This expression can be solved in a regular least-squares framework.
+
+However, usually the states latexmath:[x(k)] are not available and we need to estimate the states as well.
+A state vector contains the information needed to compute future outputs if the inputs are known. Therefore, we can use some combination of future outputs in order to get a state representation. As the the state-space representation is not unique, we can use an arbitrary linear combination of the future outputs. Let the system order be n, then the amount of future outputs considered for the state estimation will be n as well. Formally
+[latexmath]
++++++++++++
+x(k) = L \begin{bmatrix}\hat{y}(k+1)\\\hat{y}(k+2)\\\vdots \\\hat{y}(k+n)\end{bmatrix}.
++++++++++++
+The choice of L is arbitrary, but should regular. Given that the state sequence latexmath:[x(k)] was computed using this method, the aforementioned least-squares predictor can be used to estimate the state-space model expressed by the matrices A, B, C and D.
+
 === 14. Explain the different steps of the subspace identification method based on the observability matrix: estimation of the extended observability matrix, estimation of the order n, the matrices A and C, and estimation of B and D.
+
+The subspace identification method is a method to estimated a state-space model of a system, when no states are measured and only a sequence of inputs latexmath:[u(k)] and outputs latexmath:[y(k)] is available. It used an estimate of the observability matrix to firstly estimate the system matrix A and the output matrix C and then estimates the matrices B and D using the estimates latexmath:[\hat{A}] and latexmath:[\hat{C}].
+
+The observability matrix has the following shape
+[latexmath]
++++++++++++
+O_r = \begin{bmatrix} C\\CA\\CA^{2}\\\vdots \\ CA^{r-1}\end{bmatrix}_{rn_y \times n}
++++++++++++
+Given the measured output latexmath:[y(k)] and the input sequence latexmath:[u(k)] construct the vectors
+[latexmath]
++++++++++++
+Y_r(k) = \begin{bmatrix}y(k)\\y(k+1)\\\vdots \\y(k+r-1)\end{bmatrix} \text{ and } U_r(k) = \begin{bmatrix}u(k)\\u(k+1)\\\vdots \\ u(k+r-1)\end{bmatrix}
++++++++++++
+and assemble them into matrices
+[latexmath]
++++++++++++
+\mathbf{Y} = \begin{bmatrix}Y_r(0)&Y_r(1)&\ldots&Y_r(N)\end{bmatrix} \text{ and } \mathbf{U} = \begin{bmatrix}U_r(0)&U_r(1)&\ldots&U_r(N)\end{bmatrix}.
++++++++++++
+
+Then constructing the orthogonal matrix latexmath:[\mathbf{U}^\perp = \mathbf{I} - \mathbf{U}^\top (\mathbf{UU}^\top)^{-1} \mathbf{U}] and using the relation latexmath:[Y_r(k) = O_rx(k) + S_r U_r(k)] we can compute the extended observability matrix latexmath:[\mathbf{Q} = \mathbf{YU}^\perp]. Then the rank of Q can be estimated in order to estimate the order of the system. For instance SVD can be used to estimate the rank. The estimate of the observability matrix latexmath:[O_r] are then the fist n columns of latexmath:[\mathbf{Q}], where n is the estimated order of the system. Using the formula for the observability matrix, estimates for the matrices A and C can be extracted from latexmath:[O_r].
+
+Now, suppose that the estimates latexmath:[\hat{A}] and latexmath:[\hat{C}] are already available. The output predictor using the identified matrices is
+[latexmath]
++++++++++++
+\hat{y}(k) = \hat{C}(qI - \hat{A})^{-1} B u(k) + Du(k) = \begin{bmatrix}B^\top & D\end{bmatrix} \begin{bmatrix}u_f^\top(k)\\u(k)\end{bmatrix} = \theta^\top \varphi(k)
++++++++++++
+which can than be solved for B and D (latexmath:[\theta]) in the least-squares fashion.
 
 === 15. Explain the Gauss-Newton method for minimization of the fit criterion.
 
