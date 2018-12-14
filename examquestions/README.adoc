@@ -110,6 +110,7 @@ There are different strategies for state-space identification. First let's consi
 [latexmath]
 +++++++++++
 x(k+1) = Ax(k) + Bu(k) + w(k)
++++++++++++
 [latexmath]
 +++++++++++
 y(k) = Cx(k) + Du(k) + e(k)
