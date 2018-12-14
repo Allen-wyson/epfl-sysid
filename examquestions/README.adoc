@@ -109,7 +109,9 @@ image:bj.png[BJ]
 There are different strategies for state-space identification. First let's consider that we have the state latexmath:[x(k)] available either because their measured or by other magical reasons. Then, we can rewrite the well-known state-space model
 [latexmath]
 +++++++++++
-x(k+1) = Ax(k) + Bu(k) + w(k)\\
+x(k+1) = Ax(k) + Bu(k) + w(k)
+[latexmath]
++++++++++++
 y(k) = Cx(k) + Du(k) + e(k)
 +++++++++++
 into a single expression
