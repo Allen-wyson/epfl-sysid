@@ -87,20 +87,40 @@ J(\theta) = \sum\limits_{k=1}^{N} [y(k) - \hat{y}(k, \theta)]^2 .
 And therefore only a linear least squares objective is to be solved.
 
 Usually, the estimates obtained by ARX are biased as the noise model is not applicable in most of the cases. ARX only gives unbiased estimates if the noise model latexmath:[n(k) = \frac{e(k)}{A(q^-1)}] is present in the system structure or if the instrumental variables method (IV) is used in order to obtain asymptotically unbiased estimates.
+If the system to be identified implements the ARX structure, the ARX method will result in asymptotically unbiased estimates.
 
 ARX assumes that the noise model is latexmath:[H_0 (q^{-1}) = \frac{1}{A(q^{-1})}].
+
+If the model assumptions on the plant model latexmath:[G(s)] and the noise model latexmath:[H(s)] are not correct, the ARX structure will of course yield a biased estimate.
+Analysis the bias-distribution of the ARX model shows that the bias is distributed according to the inverse of the noise model latexmath:[H = \frac{1}{A}]. As physical systems usually show low-pass behavior, the bias distribution has the shape of a high-pass filter and thus the bias is more in low-frequencies while high-frequencies are more accurate.
+In order to overcome this often unintended outcome, the data can be filtered by the inverse of the noise model and compute the ARX identification once again.
 
 === 9. Define the ARMAX structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
 image:armax.png[ARMAX]
 
+The ARMAX scheme is similar to the ARX model, except that the noise model transfer function now has also a numerator polynomial.
+As for the ARX model, when the system to be identified implements the ARMAX structure, ARMAX yield asymptotically unbiased estimates. Usually, ARMAX is well-suited for systems, where the noise is applied to the input of the system.
+The optimization objective is non-linear in the model parameters, so ARMAX cannot be solved using linear least squares and an iterative approach is employed. This comes with the risk of converging to a local optimum.
+The bias-distribution depends on whether the models for the plant and the noise match the true system.
+If the noise model is not chosen properly, that is the true system is never expressible by the noise model for any choice of the parameters, then also the plant model is biased.
+
 === 10. Define the OE structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
 image:oe.png[OE]
 
+The output error (OE) structure does not include any assumption on the noise model. The system model is as before described by a transfer function of the form latexmath:[\frac{q^{-d}B(q^{-1})}{A(q^{-1})}]. The noise is modeled by a term latexmath:[n(k)] without further assumptions on whiteness or frequency spectrum.
+The optimization objective of the output error structure is nonlinear and numerical optimization methods need to be used.
+Note that there is no guarantee to converge to the global optimum.
+
+The bias is distributed according to the spectrum of the input excitation signal. When bias distribution needs to be shaped one can change the excitation signal or filter the in- and output signal after recording.
+
 === 11. Define the BJ structure with a block diagram. Discuss its properties (fit criterion, biasedness, optimization, bias distribution).
 
 image:bj.png[BJ]
+
+The Box-Jenkins structure has again a noise model, but does share the denominator of the noise transfer function with the denominator of the plant transfer function.
+The Box-Jenkins fit criterion is also non-linear in the model parameters and numerical solver need to be employed including the risk of converging to a local minimum.
 
 === 12. Explain the principle of the IV method to obtain asymptotically unbiased estimates. How can the IV vector be chosen?
 
@@ -166,11 +186,20 @@ which can than be solved for B and D (latexmath:[\theta]) in the least-squares f
 
 === 15. Explain the Gauss-Newton method for minimization of the fit criterion.
 
+If the objective is not linear, no closed-form solution of the fit criterion is available and iterative methods can be used. The Gauss-Newton algorithm is one such method and uses a second order approximation of the function at the current position of the estimate. Then, the parameter vector latexmath:[\hat{\theta}_i] is iteratively updated. The Gauss-Newton sets the new parameter vector to the apex of the approximating parabola. Therefore, the first derivative (gradient) and the second derivative (Hessian) are used in order to compute the update as follows
+[latexmath]
++++++++++++
+\hat{\theta}_{i+1} = \hat{\theta}_i - [J''(\hat{\theta}_i)]^{-1} J'(\hat{\theta}_i)
++++++++++++
+as this approach iteratively updates the parameter estimate latexmath:[\hat{\theta}_i], an initial condition latexmath:[\hat{\theta}_0] is required. Usually, the least-squares estimate of a similar fit-criterion is used.
+
 === 16. Explain the pseudo linear regression algorithm to solve nonlinear optimization problems.
 
 === 17. Explain the principles of the recursive identification algorithms. What is the forgetting factor?
 
 === 18. Explain what the bias distribution is and why it is important.
+
+Bias-distribution refers to the fact that for parametric identification method the bias is not equally distributed among frequencies. Depending on the model structure and the algorithm the bias may occur mainly at different frequencies or is uniformly distributed. The bias-distribution is an important quality factor of a identified parametric model. The bias should be as low as possible in the frequencies region relevant for controller design.
 
 === 19. Explain the direct and indirect methods for closed-loop identification.
 
