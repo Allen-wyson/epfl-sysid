@@ -207,6 +207,23 @@ Bias-distribution refers to the fact that for parametric identification method t
 
 === 19. Explain the direct and indirect methods for closed-loop identification.
 
+image:closed_loop.png[Closed Loop]
+
+There are two main techniques for close-loop identification:
+
+* *direct method:* the system is excited with an external signal at the input of the plant latexmath:[u(k)] and the output latexmath:[y(k)] and an open-loop identification method is applied on the close-loop data. The problem is that we have correlation of the input signal with noise (through the controller). For the methods with noise model, we can adapt the noise model to latexmath:[H = H_0 (1 + KG_0)^{-1}] -> requires an higher order noise model and the noise should be small. Box-Jenkins should be used. *IV is very well suited for direct identification in closed-loop operation* as it aims to remove the correlation.
+* *indirect method:* the indirect methods identifies the closed-loop system as a whole and a single black box. So in fact the the closed dynamics
+
+[latexmath]
++++++++++++
+	\mathcal{T}(q^{-1}) = \frac{K(q^{-1}) G_0(q^{-1})}{1 + K(q^{-1}) G_0(q^{-1})}
++++++++++++
+is identified instead of the desired plant model latexmath:[G_0]. Given that the controller transfer function latexmath:[K] is known, the plant dynamics can be reconstructed from identified closed-loop transfer function
+[latexmath]
++++++++++++
+	G(q^{-1}) = \frac{\mathcal{T}(q^{-1})}{K(q^{-1})(1 + \mathcal{T}(q^{-1}))}
++++++++++++
+
 === 20. What is the cross-correlation test? What is the whiteness test? How are the confidence intervals computed?
 
 The cross-correlations and the whiteness test are validation methods for identified parametric model.
