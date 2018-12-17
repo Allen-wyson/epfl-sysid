@@ -128,6 +128,28 @@ Therefore an inappropriate choice of the noise model does not lead to a biased e
 
 === 12. Explain the principle of the IV method to obtain asymptotically unbiased estimates. How can the IV vector be chosen?
 
+In order to obtain unbiased estimates from the ARX model two conditions must hold:
+
+. latexmath:[R_{\phi\phi}(0)] is not singular
+. latexmath:[R_{\phi\epsilon}(0) = 0]
+
+The instrumental variables methods replaces the non-transposed latexmath:[\phi]'s in the estimator for latexmath:[\theta] by a new vector called an instrumental variable
+
+[latexmath]
++++++++++++
+\hat{\theta}_{iv} = \left[\sum\limits_{k=1}^N \phi_{iv}(k) \phi^\top(k, \hat{\theta}_i )\right] \left[\sum\limits_{k=1}^N \phi_{iv}(k) y(k)\right]\, .
++++++++++++
+
+Now, the parameter estimate for latexmath:[\hat{\theta}_{iv}] is unbiased if
+
+. latexmath:[R_{\phi_{iv}\phi}(0)] is not singular,
+. latexmath:[R_{\phi_{iv}\epsilon}(0)] = 0.
+
+When choosing an vector of instrumental variables that is correlated with the regressor vector latexmath:[\phi] and uncorrelated with noise we get asymptotically unbiased estimates.
+On choice of this vector is using the output of an identified model. Therefore, we can identified the ARX model one without use of instrumental variables and then in the subsequent step use the parameters identified as instrumental variables for another run of ARX parameter fitting.
+This process can be repeated for some iterations to obtain better results.
+
+
 === 13. Explain the different steps of the state-space identification method: when are the states measured and when are they estimated using the subspace projection method.
 
 There are different strategies for state-space identification. First let's consider that we have the state latexmath:[x(k)] available either because their measured or by other magical reasons. Then, we can rewrite the well-known state-space model
