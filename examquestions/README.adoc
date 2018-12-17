@@ -119,8 +119,12 @@ The bias is distributed according to the spectrum of the input excitation signal
 
 image:bj.png[BJ]
 
-The Box-Jenkins structure has again a noise model, but does share the denominator of the noise transfer function with the denominator of the plant transfer function.
+The Box-Jenkins structure has again a noise model, but does share the denominator of the noise transfer function with the denominator of the plant transfer function. The plant model is still expressed by the transfer function latexmath:[\frac{q^{-d}B(q^{-1})}{A(q^{-1})}], while the noise model is not expressed by the transfer function latexmath:[\frac{C(q^{-1})}{D(q^{-1})}].
 The Box-Jenkins fit criterion is also non-linear in the model parameters and numerical solver need to be employed including the risk of converging to a local minimum.
+
+As the Box-Jenkins model completely decouples the noise model and plant model such that they do not have shared parameters.
+Therefore an inappropriate choice of the noise model does not lead to a biased estimated of the plant model.
+
 
 === 12. Explain the principle of the IV method to obtain asymptotically unbiased estimates. How can the IV vector be chosen?
 
@@ -204,3 +208,8 @@ Bias-distribution refers to the fact that for parametric identification method t
 === 19. Explain the direct and indirect methods for closed-loop identification.
 
 === 20. What is the cross-correlation test? What is the whiteness test? How are the confidence intervals computed?
+
+The cross-correlations and the whiteness test are validation methods for identified parametric model.
+
+* *Cross-correlation test:* The intuition is that the residual latexmath:[\epsilon(k, \hat{\theta})] should contain any information of the system and should be therefore uncorrelated with past inputs. If there is a correlation between the residual and the past input this would mean that parts of the system are unmodelled and shape the noise instead. For the cross-correlation test, an estimate for the cross-correlation between the residual and the input signal latexmath:[\hat{R}_{\epsilon u}(h)] is computed. The cross-correlation should be small (zero in theory) in order to validate the model. In practice a statistical test with a 95% confidence interval is used and the values for the cross-correlation must lie within a certain interval dependent on the level on the confidence interval.
+* *Whiteness test*: For the models with noise model (ARX, ARMAX and Box-Jenkins) the assumption is that the system noise is a white noise filtered by some transfer function latexmath:[H(q^{-1})]. therefore the residual latexmath:[\epsilon (k, \hat{\theta}) = y(k) - \hat{y}(k, \hat{\theta})] should be white if the parameters are identified correctly and the true system can be (approximately) modeled as ARX, ARMAX or BJ system. The whiteness test checks the whiteness of the residual by computing the autocorrelation of latexmath:[\epsilon]. If the outcome is white enough (meaning that a white residual would have produced the residual we have by a percentage of 95%), the model is validated under the whiteness test.
