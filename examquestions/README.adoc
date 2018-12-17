@@ -199,7 +199,49 @@ as this approach iteratively updates the parameter estimate latexmath:[\hat{\the
 
 === 16. Explain the pseudo linear regression algorithm to solve nonlinear optimization problems.
 
+For nonlinear optimization problems (e.g. for ARMAX, BJ) the estimate for the parameter vector latexmath:[\hat{\theta}] cannot be computed in a closed form fashion as for linear problems such as the ARX objective.
+One technique is to use pseudo-linear regression, which can be written in the following structure:
+
+[latexmath]
++++++++++++
+\hat{\theta}_{i+1} = \left[\sum\limits_{k=1}^N \phi(k, \hat{\theta}_i ) \phi^\top(k, \hat{\theta}_i )\right] \left[\sum\limits_{k=1}^N \phi(k, \hat{\theta}_i ) y(k)\right],
++++++++++++
+which looks like a linear least squares solution, but note that the right hand side depends on the parameter vector latexmath:[\hat{\theta}_i]. Now, the idea is to initialize the parameter vector latexmath:[\hat{\theta}_0], e.g. by using a simple least squares model as ARX and then iterate the update rule above until convergence.
+
 === 17. Explain the principles of the recursive identification algorithms. What is the forgetting factor?
+
+Recursive identification algorithms are used when the parameters are computed online while the data is acquired. That is, while the data is measured we would like to continuously update our estimate for the model parameters. Consider the least squares solution
+
+[latexmath]
++++++++++++
+\hat{\theta} = \left[\sum\limits_{k=1}^N \phi(k) \phi^\top(k)\right]^{-1} \left[\sum\limits_{k=1}^N \phi(k) y(k)\right]
++++++++++++
+
+over the time the number of samples latexmath:[N] grows as samples are continuously collected. Each time step the latexmath:[p \times p] matrix must be inverted, where p is the number of parameters. The objective the recursive algorithms is to maintain an up-to-now estimate of the parameters and update it accordingly when a new sample arrives. The advantage is, that in order to compute the estimate at timestep t only the last parameter estimate and the new data are required, not all the past data back to latexmath:[t=0]. The recursive formulation maintains an estimate of the parameters at timestep k denoted latexmath:[\hat{\theta}_k] and the information matrix at timestep k latexmath:[P_{k}^{-1}]. The informations is proportional to the covariance matrix of the parameter estimates meaning that we get an (un)certainty measure for free. In other words by looking at latexmath:[P_k^{-1}] at timestep k, we get some measure on how certain we are about the identified parameters. Based on the closed-form solution for the least squares objective we can derive the following recursive update pattern
+
+[latexmath]
++++++++++++
+P_{k+1}^{-1} = P_k^{-1} + \phi(k+1) \phi^\top(k+1)
++++++++++++
+and
+
+[latexmath]
++++++++++++
+\hat{\theta}_{k+1} = \hat{\theta}_{k} + P_{k+1} \phi(k+1) \left[y(k+1) - \phi^\top (k+1) \hat{\theta}_k\right]\, .
++++++++++++
+
+Using the matrix inversion lemma, one can also get rid of the inversion of the information matrix and directly keep the proportional of covariance term.
+
+==== Forgetting Factor
+
+It can be shown that the trace of the information matrix latexmath:[P_{k+1}] will converge to zero and therefore, the adaptation gain will be almost zero after some time. In other words after some time we not follow changes in the system parameters anymore. In order to use the system for online identification of time-varying systems, a _forgetting factor_ latexmath:[\lambda] should be introduced. The forgetting factors gives more importance to the most recent samples and less importance to older data. The forgetting factors effects the update of the information matrix
+
+[latexmath]
++++++++++++
+P_{k+1}^{-1} = \lambda P_{k}^{-1} + \phi(k+1) \phi^\top (k+1)
++++++++++++
+
+When we are at timestep k, the sample at time k is weights by latexmath:[\lambda^0 = 1] and the sample h times ago is weighted by latexmath:[\lambda^h]. Usually, the forgetting factor is set such that latexmath:[0.9 \le \lambda \le 0.99].
 
 === 18. Explain what the bias distribution is and why it is important.
 
@@ -211,8 +253,11 @@ image:closed_loop.png[Closed Loop]
 
 There are two main techniques for close-loop identification:
 
-* *direct method:* the system is excited with an external signal at the input of the plant latexmath:[u(k)] and the output latexmath:[y(k)] and an open-loop identification method is applied on the close-loop data. The problem is that we have correlation of the input signal with noise (through the controller). For the methods with noise model, we can adapt the noise model to latexmath:[H = H_0 (1 + KG_0)^{-1}] -> requires an higher order noise model and the noise should be small. Box-Jenkins should be used. *IV is very well suited for direct identification in closed-loop operation* as it aims to remove the correlation.
-* *indirect method:* the indirect methods identifies the closed-loop system as a whole and a single black box. So in fact the the closed dynamics
+==== Direct Method
+The system is excited with an external signal at the input of the plant latexmath:[u(k)] and the output latexmath:[y(k)] and an open-loop identification method is applied on the close-loop data. The problem is that we have correlation of the input signal with noise (through the controller). For the methods with noise model, we can adapt the noise model to latexmath:[H = H_0 (1 + KG_0)^{-1}] -> requires an higher order noise model and the noise should be small. Box-Jenkins should be used. *IV is very well suited for direct identification in closed-loop operation* as it aims to remove the correlation.
+
+==== Indirect Method
+The indirect methods identifies the closed-loop system as a whole and a single black box. So in fact the the closed dynamics
 
 [latexmath]
 +++++++++++
@@ -228,5 +273,8 @@ is identified instead of the desired plant model latexmath:[G_0]. Given that the
 
 The cross-correlations and the whiteness test are validation methods for identified parametric model.
 
-* *Cross-correlation test:* The intuition is that the residual latexmath:[\epsilon(k, \hat{\theta})] should contain any information of the system and should be therefore uncorrelated with past inputs. If there is a correlation between the residual and the past input this would mean that parts of the system are unmodelled and shape the noise instead. For the cross-correlation test, an estimate for the cross-correlation between the residual and the input signal latexmath:[\hat{R}_{\epsilon u}(h)] is computed. The cross-correlation should be small (zero in theory) in order to validate the model. In practice a statistical test with a 95% confidence interval is used and the values for the cross-correlation must lie within a certain interval dependent on the level on the confidence interval.
-* *Whiteness test*: For the models with noise model (ARX, ARMAX and Box-Jenkins) the assumption is that the system noise is a white noise filtered by some transfer function latexmath:[H(q^{-1})]. therefore the residual latexmath:[\epsilon (k, \hat{\theta}) = y(k) - \hat{y}(k, \hat{\theta})] should be white if the parameters are identified correctly and the true system can be (approximately) modeled as ARX, ARMAX or BJ system. The whiteness test checks the whiteness of the residual by computing the autocorrelation of latexmath:[\epsilon]. If the outcome is white enough (meaning that a white residual would have produced the residual we have by a percentage of 95%), the model is validated under the whiteness test.
+==== Cross-Correlation Text
+The intuition is that the residual latexmath:[\epsilon(k, \hat{\theta})] should contain any information of the system and should be therefore uncorrelated with past inputs. If there is a correlation between the residual and the past input this would mean that parts of the system are unmodelled and shape the noise instead. For the cross-correlation test, an estimate for the cross-correlation between the residual and the input signal latexmath:[\hat{R}_{\epsilon u}(h)] is computed. The cross-correlation should be small (zero in theory) in order to validate the model. In practice a statistical test with a 95% confidence interval is used and the values for the cross-correlation must lie within a certain interval dependent on the level on the confidence interval.
+
+==== Whiteness Test
+For the models with noise model (ARX, ARMAX and Box-Jenkins) the assumption is that the system noise is a white noise filtered by some transfer function latexmath:[H(q^{-1})]. therefore the residual latexmath:[\epsilon (k, \hat{\theta}) = y(k) - \hat{y}(k, \hat{\theta})] should be white if the parameters are identified correctly and the true system can be (approximately) modeled as ARX, ARMAX or BJ system. The whiteness test checks the whiteness of the residual by computing the autocorrelation of latexmath:[\epsilon]. If the outcome is white enough (meaning that a white residual would have produced the residual we have by a percentage of 95%), the model is validated under the whiteness test.
