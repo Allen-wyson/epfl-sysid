@@ -232,7 +232,7 @@ Before we start with the identification procedure, we remove the mean value of t
 
 It is one of the goals of system identification to find the simplest model, which meets the desired criteria. Therefore, the model order estimation plays an important role in the procedure. In this section, we will focus on finding the order for the Active Suspension System. 
 
-In the first approach, we will use the ARX structure. As the loss function $ J(\theta^{^} ) /N $ for this structure is monotonically non-increasing with respect to the number of the parameter estimates (dimension of $\theta$), the model order can be estimated by analysing the shape of the loss function. We set the delay to $n_k = 0$, the order of the nominator of the plant model $n_b$ equal to the order of the denominator $n_a$ and choose a maximum order of $n=10$. In doing so, we obtain $10$ different ARX models. The corresponding loss function can be seen in Figure~\ref{fig:loss_fcn}. 
+In the first approach, we will use the ARX structure. As the loss function $ J(\hat{\theta}) /N $ for this structure is monotonically non-increasing with respect to the number of the parameter estimates (dimension of $\theta$), the model order can be estimated by analyzing the shape of the loss function. We set the delay to $n_k = 0$, the order of the nominator of the plant model $n_b$ equal to the order of the denominator $n_a$ and choose a maximum order of $n=10$. In doing so, we obtain $10$ different ARX models. The corresponding loss function can be seen in Figure~\ref{fig:loss_fcn}. 
 
 \begin{figure}[h]
 	\centering
