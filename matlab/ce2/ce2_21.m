@@ -5,14 +5,15 @@ load CE2.mat
 N = size(u,1);
 Z = iddata(y,u,0.03);
 
-
-
 for n= 1:10
     M = arx(Z,[n n 1]);
     J(n) = M.EstimationInfo.LossFcn;
 end
 
 plot(J);
+ylabel("J(\theta)")
+xlabel("Model Order n")
+grid
 
 % zero-pole cancellation
 M4 = armax(Z,[4 4 4 1]);
