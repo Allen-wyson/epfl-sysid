@@ -193,12 +193,18 @@ The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \ap
 \begin{figure}[h]
 	\centering
 	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/output_arx.pdf}
+		\includegraphics[width=\textwidth]{figures/output_arx.pdf}
 		\subcaption{Comparison of measured output $y$ and predicted output $\hat{y}$ using the past measured output.}\label{fig:output_arx}
 	\end{subfigure}\hfill
 	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/output_lsim2.pdf}
+		\includegraphics[width=\textwidth]{figures/output_lsim2.pdf}
 		\subcaption{Comparison of measured output $y$ and predicted output $y_m$ using only the input and a transfer function model.}\label{fig:output_lsim2}
+	\end{subfigure}
+	\begin{subfigure}{\textwidth}
+		\vspace*{1cm}
+		\includegraphics[width=\textwidth]{figures/arx_iv.pdf}
+		\subcaption{Comparison of the simulated output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method, respectively.}
+
 	\end{subfigure}
 	\caption{Comparison of predicted and measured output. On the left: comparison with predictor using the past measured output. On the right: comparison only using the input data and the simulated transfer function model.}
 \end{figure}
