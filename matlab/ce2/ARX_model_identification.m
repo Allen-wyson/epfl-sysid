@@ -8,6 +8,7 @@ function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iteratio
     % J_tf: prediction loss of the identified transfer function
     N = size(u,1);
 
+    %% Regressor
     function [phi] = create_phi_matrix(u, y)
         phi = zeros(N,4);
         phi(2,:) = [-y(1), 0, u(1), 0];
@@ -16,13 +17,17 @@ function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iteratio
         end
     end
 
+    %% ARX model and IV
     phi = create_phi_matrix(u, y);
     out = y;
     for i=1:iterations
+        % Instrumental variables method
         phi_iv = create_phi_matrix(u, out);
-        theta = inv(phi_iv' * phi) * phi_iv' * y;
+        
+        % Computing the parameters using least square
+        theta = inv(phi_iv' * phi) * phi_iv' * y; s 
 
-        %% Transfer function model
+        % Transfer function model
         f_sampling = 1e3;
         z = tf('z', 1/f_sampling);
         sys = (theta(3)*(1/z) + theta(4)*(1/z^2)) / ...
@@ -34,7 +39,7 @@ function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iteratio
         out = ym;
     end
 
-    %% Output and loss function
+    %% Predicted output and loss function
     yh = phi * theta;
     J = norm(yh - y)^2;
     J_tf = norm(ym - y)^2;
