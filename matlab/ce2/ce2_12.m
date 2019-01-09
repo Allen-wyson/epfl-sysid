@@ -13,7 +13,7 @@ N = size(u,1);
 disp(sprintf("Prediction loss: %f", J));
 disp(sprintf("Transfer function model loss: %f", J_tf));
 
-[yh_iv, ysim_iv, theta_iv, sys_iv, J_iv, J_tf_iv] = ARX_model_identification(u, y, 100);
+[yh_iv, ysim_iv, theta_iv, sys_iv, J_iv, J_tf_iv] = ARX_model_identification(u, y, 4);
 
 disp(sprintf("Transfer function model loss (IV): %f", J_tf_iv));
 
