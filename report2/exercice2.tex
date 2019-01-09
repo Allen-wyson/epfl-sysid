@@ -159,6 +159,8 @@ The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is th
 
 \matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
 
+\clearpage
+
 \subsection{ARX Model Identification}
 We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous chapter (\texttt{laserbeamdataN.mat}, $N = 500$). Therefore, we use the following predictor
 \begin{align}\label{eq:arx}
@@ -203,21 +205,98 @@ The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \ap
 	\begin{subfigure}{\textwidth}
 		\vspace*{1cm}
 		\includegraphics[width=\textwidth]{figures/arx_iv.pdf}
-		\subcaption{Comparison of the simulated output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method, respectively.}
+		\subcaption{Comparison of the measured output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method with $4$ iterations, respectively.}
 
 	\end{subfigure}
-	\caption{Comparison of predicted and measured output. On the left: comparison with predictor using the past measured output. On the right: comparison only using the input data and the simulated transfer function model.}
+	\caption{Comparison of predicted and measured output. Upper part: comparison with predictor using the past measured output and comparison only using the input data and the simulated transfer function model. Lower part:comparison of ARX model with IV method and past measured output}
 \end{figure}
 
-\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique.}{lst:FIR}
+In order to obtain unbiased estimates the following two conditions must be satisfied: 
 
-\textcolor{red}{IV method}
+\begin{enumerate}
+\item $R_{\phi \phi}$ is not singular,
+\item $R_{\phi e }(0) = 0$.
+\end{enumerate}
+
+These conditions can be satisfied by replacing the non-transposed $\phi$'s in the estimator for $\hat{\theta}$ by a new vector $\phi_{iv}$ called the vector of  instrumental variables (IV):
+
+\begin{equation}
+\hat{\theta}_{iv} = \left[ \sum\limits_{k=1}^N \phi_{iv}(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
+\phi_{iv}(k) y(k)
+\end{equation}
+
+Therefore, the estimates are asymptotically unbiased, if 
+\begin{enumerate}
+\item $R_{\phi_{iv} \phi}$ is not singular,
+\item $R_{\phi_{iv} e }(0) = 0$.
+\end{enumerate}
+
+That means, choosing an vector of instrumental variables, that is correlated with the regressor vector $\phi$ and uncorrelated with the noise $e$ leads to asymptotically unbiased estimates.
+
+One choice of this vector is keeping the past, non-noisy inputs in the vector and replacing the past noisy outputs using the output of an already identified model $M(q^{-1})$. A noiseless output of this model can be computed by 
+
+\begin{equation}
+y_m(k) = M(q^{-1}) u(k)
+\end{equation}
+
+and the vector $\phi_{iv}$ is defined as
+
+\begin{equation}
+\phi_{iv}^T(k) = \left[-y_M(k-1),\ldots,-y_M(k-n),u(k-d-1),\ldots,u(k-d-m)\right]
+\end{equation}
+
+with $d=0$. 
+
+Therefore, we can identify the ARX model one without the use of instrumental variables. Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
+In order to obtain better results, this process can be repeated for several iterations. For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. 
+
+
+\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method.}{lst:ARX}
 
 % TODO: The result using the instrumental variation method does not really improve the prediction.
 % --> Interpretation we have bias and no variance in the results. The model order is not a good choice and we're doing a systemcatic error.
 % --> Idea: show the third order model result for proof that this indeed works better?
 
+\clearpage
 \subsection{State-space Model Identification}
+
+In this part, a state-space model for the laser beam stabilizing system using the subspace method based on the extended observability matrix is identified. \\
+
+First, the following matrices are defined: 
+
+\begin{align}
+ Y &= \left[Y_r(1), Y_r(2),\ldots,Y_r(N) \right] \\
+ U &= \left[U_r(1), U_r(2),\ldots,U_r(N) \right] \\
+ X &= \left[x_r(1), x_r(2),\ldots,x_r(N) \right]
+\end{align}
+
+with 
+
+\quad $Y_r(k) = \left[ \begin{array}{c} y(k) \\\ y(k+1) \\\ \vdots \\\ y(k + r -1) \end{array}\right] $ \quad and \quad $U_r(k) = \left[ \begin{array}{c} u(k) \\\ u(k+1) \\\ \vdots \\\ u(k + r -1) \end{array}\right] $ \\
+
+The output of the noise-free state-space model can be written as
+\begin{equation}
+y(k+i) = CA^{i}x(k) + CA^{i-1}Bu(k) + CA^{i-2}Bu(k+1) + \cdots + CBu(k+i-1) + Du(k+i)
+\end{equation}
+and as 
+\begin{equation}
+\textbf{Y} = O_r \textbf{X} + S_r \textbf{U}
+\label{eq:statespace}
+\end{equation}
+respectively. \\
+
+To get rid of the unknown matrix $S_r$ the following $ N \times N $ matrix is formed: 
+\begin{equation}
+\textbf{U}^{\bot} = \textbf{I} - \textbf{U}^{\bot}(\textbf{U}\textbf{U}^{\bot})^{-1}\textbf{U} \quad \text{with} \quad \textbf{U}\textbf{U}^{\bot} = 0.
+\end{equation}
+
+By multiplying Equation~\ref{eq:statespace} with $\textbf{U}^{\bot}$ from the right, we obtain:
+\begin{equation}
+Q = \textbf{Y}\textbf{U}^{\bot} = O_r\textbf{X}\textbf{U}^{\bot}.
+\end{equation}
+
+Afterwards, we compute the singular values of $Q$ with the MATLAB command \texttt{svd}. As only the first three singular values are significantly larger then zero, we assume a number of states $n$ equal to three, $n=3$. Then, the first $n=3$ columns of $Q$ are considered as an estimate of the observability matrix $O_r$.
+
 
 \newpage
 \section{Parametric Identification of an Active Suspension System}
@@ -275,8 +354,7 @@ As we use noisy data for our identification, an exact zero pole cancellation is 
 	\label{fig:zero_pole}
 \end{figure}
 
-
-\textcolor{red}{Which order? 6 or 7? 7 has greater confidence intervals but 8 a good visible cancellation} \\
+The zero/pole cancellation method validates our chosen order $n=6$. For an order of $n=7$ the confidence intervals are significantly larger than for lower orders. That is why we cannot determine the exact value of the poles. \\
 
 As a next step, the delay $n_k$ is estimated. This is done by inspecting the impulse response of the system. As the impulse response is equal to the parameters $b_k$ of a FIR model, we use a high order FIR model to plot it. All we have to consider is that the number of parameters $m$ of this model is bigger then the settling time of the impulse response $g(t)$. As $g(t)$ is approximately zero after $ 1 s$ we set the model order to $m = 40$ due to the sampling time $T_e = 0.03 s$.
 The time delay $d$ of the system can then be obtained as the number of the first values of the impulse response, that is the first parameters of the FIR model, that are equal to zero. 
@@ -302,7 +380,7 @@ Figure~\ref{fig:fir40} shows the impulse response and Figure~\ref{fig:fir40_dev}
 	\label{fig:delay}
 \end{figure}
 
-As the last step, the number of the parameters in the numerator $n_b$ is estimated. This is done by comparing the loss function of different ARX models with a value of $n_b$ as follows: $1 \leq n_b \leq n  - n_k + 1 = 6 - 2 + 1 = 7$. The results can be seen in Table~\ref{tab:denom}.
+As the last step, the number of the parameters in the numerator $n_b$ is estimated. This is done by comparing the loss function of different ARX models with a value of $n_b$ as follows: $1 \leq n_b \leq n  - n_k + 1 = 6 - 2 + 1 = 5$. The results can be seen in Table~\ref{tab:denom}.
 
 \begin{table}[h]
 	\centering
@@ -335,7 +413,7 @@ With \texttt{struc} we generate $1000$ model-order combinations for the ARX mode
 	\caption{Loss functions calculated with \texttt{arxstruc}}\label{fig:selstruc}
 \end{figure}
 
-\textcolor{red}{TODO: COMPARISON}
+The order proposed by MATLAB via \texttt{struc}, \texttt{arxstruc} and \texttt{selstruc} are significantly larger ($n = 10$). This is due to the fact, that MATLAB tries to fit the noise as well and not just only the real data. It can be seen in Figure~\ref{fig:selstruc} that the output variance is almost constant for more than $10$ parameters. As we want a good trade-off between computational cost and the variance, $10$ parameters seems to be a reasonable choice. This coincides with the choice we made before, since $n_a + n_b = 6 + 4 = 10$. 
 
 \newpage
 \subsection{Parametric Identification}
