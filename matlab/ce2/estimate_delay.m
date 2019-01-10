@@ -1,11 +1,13 @@
 load CE2.mat
 
+t_sample = 0.03
+
 in = detrend(u,'constant');
 out = detrend(y,'constant');
 
-Z = iddata(out,in,0.03);
+Z = iddata(out,in,t_sample);
 
-m = 40;
+m = 40; % Number of parameters
 
 %% FIR Model for estimating the delay with 
 % Output error model nb = m, na = 0 and nk = 1 (or d = 0) 
