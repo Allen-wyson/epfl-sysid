@@ -128,7 +128,7 @@ Afterwards, we compute the predicted output of our identified model $\hat{y} (k,
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/output.pdf}
-	\caption{Output of the system}\label{fig:output_fir}
+	\caption{Predicted and measured output of the system}\label{fig:output_fir}
 \end{figure}
 
 In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. We therefore consider a loss function as 
@@ -175,15 +175,17 @@ Using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\ph
 	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
 \phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
 \end{equation}
+We construct the matrix consisting of the input and output values according to the predictor structure and solve for the parameters using the backlash operator.
+The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using 
+$\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
+Note that this predictor (in contrast to the simulated transfer function below) uses the measured past value of the output.
+
 In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. Hence, we consider a loss function as 
 \begin{equation}\label{eq:J}
 	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
 \end{equation}
-We construct the matrix consisting of the input and output values according to the predictor structure and solve for the parameters using the backlash operator.
 Using this, we obtain $ J(\theta) \approx 2.17 \cdot 10^{-5}$. 
-The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using 
-$\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
-Note that this predictor (in contrast to the simulated transfer function below) uses the measured past value of the output.
+
 Afterwards we compute the output of the identified model $y_m(k)$ using the MATLAB command \texttt{lsim} and the transfer function of the model
 \begin{equation}
 	G_0(q) = \frac{b_1 q^{-1} + b_2 q^{-2}}{1 + a_1 q^{-1} + a_2 q^{-2}}
@@ -205,12 +207,13 @@ The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \ap
 	\begin{subfigure}{\textwidth}
 		\vspace*{1cm}
 		\includegraphics[width=\textwidth]{figures/arx_iv.pdf}
-		\subcaption{Comparison of the measured output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method with $4$ iterations, respectively.}
+		\subcaption{Comparison of the measured output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method with $4$ iterations, respectively.} \label{fig:output_arx_iv}
 
 	\end{subfigure}
 	\caption{Comparison of predicted and measured output. Upper part: comparison with predictor using the past measured output and comparison only using the input data and the simulated transfer function model. Lower part:comparison of ARX model with IV method and past measured output}
 \end{figure}
 
+\vspace{0.5cm}
 In order to obtain unbiased estimates the following two conditions must be satisfied: 
 
 \begin{enumerate}
@@ -221,8 +224,7 @@ In order to obtain unbiased estimates the following two conditions must be satis
 These conditions can be satisfied by replacing the non-transposed $\phi$'s in the estimator for $\hat{\theta}$ by a new vector $\phi_{iv}$ called the vector of  instrumental variables (IV):
 
 \begin{equation}
-\hat{\theta}_{iv} = \left[ \sum\limits_{k=1}^N \phi_{iv}(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
-\phi_{iv}(k) y(k)
+\hat{\theta}_{iv} = \left[ \sum\limits_{k=1}^N \phi_{iv}(k)\phi^T(k) \right]^{-1} \left[\sum\limits_{k=1}^N \phi_{iv}(k) y(k) \right]
 \end{equation}
 
 Therefore, the estimates are asymptotically unbiased, if 
@@ -248,7 +250,7 @@ and the vector $\phi_{iv}$ is defined as
 with $d=0$. 
 
 Therefore, we can first identify an ARX model without the use of instrumental variables. Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
-In order to obtain better results, this process can be repeated for several iterations. For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. 
+In order to obtain better results, this process can be repeated for several iterations. For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. The result of the instrumental variables method compared to the measured output and the predicted output of the transfer function model can be seen in Figure~\ref{fig:output_arx_iv}. 
 
 
 \matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method.}{lst:ARX}
@@ -272,7 +274,8 @@ First, the following matrices are defined:
 
 with 
 
-\quad $Y_r(k) = \left[ \begin{array}{c} y(k) \\\ y(k+1) \\\ \vdots \\\ y(k + r -1) \end{array}\right] $ \quad and \quad $U_r(k) = \left[ \begin{array}{c} u(k) \\\ u(k+1) \\\ \vdots \\\ u(k + r -1) \end{array}\right] $ \\
+\quad $Y_r(k) = \left[ \begin{array}{c} y(k) \\\ y(k+1) \\\ \vdots \\\ y(k + r -1) \end{array}\right] $ , \quad $U_r(k) = \left[ \begin{array}{c} u(k) \\\ u(k+1) \\\ \vdots \\\ u(k + r -1) \end{array}\right] $ \quad and \quad $r > n $\\
+
 
 The output of the noise-free state-space model can be written as
 \begin{equation}
@@ -287,7 +290,7 @@ respectively. \\
 
 To get rid of the unknown matrix $S_r$ the following $ N \times N $ matrix is formed: 
 \begin{equation}
-\textbf{U}^{\bot} = \textbf{I} - \textbf{U}^{\bot}(\textbf{U}\textbf{U}^{\bot})^{-1}\textbf{U} \quad \text{with} \quad \textbf{U}\textbf{U}^{\bot} = 0.
+\textbf{U}^{\bot} = \textbf{I} - \textbf{U}^{T}(\textbf{U}\textbf{U}^{T})^{-1}\textbf{U} \quad \text{with} \quad \textbf{U}\textbf{U}^{\bot} = 0.
 \end{equation}
 
 By multiplying Equation~\ref{eq:statespace} with $\textbf{U}^{\bot}$ from the right, we obtain:
@@ -302,7 +305,7 @@ Afterwards, we compute the singular values of $Q$ with the MATLAB command \textt
 \section{Parametric Identification of an Active Suspension System}
 
 In this section we identify a model between the current reference for the DC motor and the acceleration of the sprung mass of the active suspension system in Figure~\ref{fig:active_suspension}. 
-Therefore, we use the time-domain data CE2.mat. This file contains the input u and the output signal y of the system with a set of $N = 2044$ data and a sampling time of $T_e = 0.03$. \\
+Therefore, we use the time-domain data CE2.mat. This file contains the input $u$ and the output signal $y$ of the system with a set of $N = 2044$ data and a sampling time of $T_e = 0.03$. \\
 
 \begin{figure}[h]
 	\centering
@@ -354,7 +357,7 @@ As we use noisy data for our identification, an exact zero pole cancellation is 
 	\label{fig:zero_pole}
 \end{figure}
 
-The zero/pole cancellation method validates our chosen order $n=6$. For an order of $n=7$ the confidence intervals are significantly larger than for lower orders. That is why we cannot determine the exact value of the poles. \\
+The zero/pole cancellation method validates our chosen order $n=6$. For an order of $n=7$ the confidence intervals are significantly larger than for lower orders. That is why we cannot determine the exact value of the poles. \textcolor{red}{Begründung} \\
 
 As a next step, the delay $n_k$ is estimated. This is done by inspecting the impulse response of the system. As the impulse response is equal to the parameters $b_k$ of a FIR model, we use a high order FIR model to plot it. All we have to consider is that the number of parameters $m$ of this model is bigger then the settling time of the impulse response $g(t)$. As $g(t)$ is approximately zero after $ 1 s$ we set the model order to $m = 40$ due to the sampling time $T_e = 0.03 s$.
 The time delay $d$ of the system can then be obtained as the number of the first values of the impulse response, that is the first parameters of the FIR model, that are equal to zero. 
@@ -380,7 +383,7 @@ Figure~\ref{fig:fir40} shows the impulse response and Figure~\ref{fig:fir40_dev}
 	\label{fig:delay}
 \end{figure}
 
-As the last step, the number of the parameters in the numerator $n_b$ is estimated. This is done by comparing the loss function of different ARX models with a value of $n_b$ as follows: $1 \leq n_b \leq n  - n_k + 1 = 6 - 2 + 1 = 5$. The results can be seen in Table~\ref{tab:denom}.
+As the last step, the number of the parameters in the numerator $n_b$ is estimated. This is done by comparing the loss function of different ARX models with a value of $n_b$ as follows: $1 \leq n_b \leq n  - n_k + 1 = 6 - 2 + 1 = 5$. This is done with the MATLAB variable \texttt{M.EstimationInfo.LossFcn}. The results can be seen in Table~\ref{tab:denom}.
 
 \begin{table}[h]
 	\centering
@@ -413,16 +416,62 @@ With \texttt{struc} we generate $1000$ model-order combinations for the ARX mode
 	\caption{Loss functions calculated with \texttt{arxstruc}}\label{fig:selstruc}
 \end{figure}
 
-The order proposed by MATLAB via \texttt{struc}, \texttt{arxstruc} and \texttt{selstruc} are significantly larger ($n = 10$). This is due to the fact, that MATLAB tries to fit the noise as well and not just only the real data. It can be seen in Figure~\ref{fig:selstruc} that the output variance is almost constant for more than $10$ parameters. As we want a good trade-off between computational cost and the variance, $10$ parameters seems to be a reasonable choice. This coincides with the choice we made before, since $n_a + n_b = 6 + 4 = 10$. 
+The order proposed by MATLAB via \texttt{struc}, \texttt{arxstruc} and \texttt{selstruc} is significantly larger ($n = 10$). This is due to the fact, that MATLAB tries to fit the noise as well and not just only the real data. It can be seen in Figure~\ref{fig:selstruc} that the output variance is almost constant for more than $10$ parameters. As we want a good trade-off between computational cost and the variance, $10$ parameters seems to be a reasonable choice. This coincides with the choice we made before, since $n_a + n_b = 6 + 4 = 10$. 
 
 \newpage
 \subsection{Parametric Identification}
 
-In this section, we want to create different parametric models using the estimated values for the parameters $n_a$, $n_b$ and $n_k$ from the previous section. Therefore, we use various MATLAB commands. We create ARX model, an Instrumental variables method model, an ARMAX model, an Output error structure model, an  Box-jenkings model and a State space model.\\
+In this section, we want to create different parametric models using the estimated values for the parameters $n_a$, $n_b$ and $n_k$ from the previous section. Therefore, we use various MATLAB commands. We create ARX model, an Instrumental variables method model, an ARMAX model, an Output error structure model, a  Box-jenkings model and a State space model.\\
 Doing that, we divide the data in to different parts. The first one we use for the model identification and the second one for the model validation. 
 The code for this can be seen in Listing~\ref{lst:parametric}.  
 
 \matlabcode{../matlab/ce2/parametric_identification.m}{Code for partitioning the data and creating the models}{lst:parametric}
 
+\clearpage
 \subsection{Model Validation}
+As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. The second half of the data, that has not been used for the identification, is used to validate the models. \\
+First, we compare the output of the models with the measured output of the second half of the data.  Thereby, the same input is applied to the model and the system. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=7cm]{figures/comparison.png}
+	\caption{Comparison of the measured output with the output of the models with the same input each time. The MATLAB command \texttt{compare} is used. }\label{fig:comparison }
+\end{figure}
+
+According to this, the best model is the State Space Model with a fit of $74.98 \% $
+
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_arx.png}
+		\subcaption{Whiteness test and cross-correlation test of the ARX model}\label{fig:v_arx}
+	\end{subfigure}\hfill
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_iv.png}
+		\subcaption{Whiteness test and cross-correlation test of the Instrumental Variables method}\label{fig:v_iv4}
+	\end{subfigure}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_armax.png}
+		\subcaption{Whiteness test and cross-correlation test of the ARMAX model}\label{fig:v_armax}
+	\end{subfigure}\hfill
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_oe.png}
+		\subcaption{Whiteness test and cross-correlation test of the Output Error model}\label{fig:v_oe}
+	\end{subfigure}
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_bj.png}
+		\subcaption{Whiteness test and cross-correlation test of the Box Jenkins model}\label{fig:v_bj}
+	\end{subfigure}\hfill
+	\begin{subfigure}{.49\textwidth}
+		\includegraphics[height=5.5cm]{figures/v_ss.png}
+		\subcaption{Whiteness test and cross-correlation test of the State Space model}\label{fig:v_n4sid}
+	\end{subfigure}
+	
+	
+	\caption{Whiteness test of the residuals and cross-correlation of the residuals and past inputs of different models with the MATLAB command \texttt{resid}.}
+	\label{fig:test}
+\end{figure}
+
+
 \end{document}
