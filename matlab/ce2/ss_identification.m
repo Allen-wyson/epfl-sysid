@@ -4,12 +4,12 @@ function [A, B, C, D] = ss_identification(u, y)
 	% returns: the identified state space model matrices
 
 	N = size(u,1);
-	r = 10;
-	thrshld = 0.8;
+	r = 10; % maximal order of the system
+	thrshld = 0.8; % minimal percentage of singular values to keep
 
+	% Construct U and Y
 	Y = zeros(r, N);
 	U = zeros(r, N);
-
 	for i=1:N
 		for j=1:r
 			k = i+j-1;
