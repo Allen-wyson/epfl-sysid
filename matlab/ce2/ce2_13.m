@@ -33,12 +33,11 @@ C = O(1,:);
 A = pinv(O(1:(r-1),:)) * O(2:r,:);
 
 
-% TODO: fix the implementation here. There is no q. The matrix F should actually be a transfer function
-q = 0;
+q = tf('z');
 F = C*inv(q*eye(n) - A);
 uf = zeros(N, n);
-for i=(n+1):N
-	uf(i,:) = F*u(i-n);
+for i=1:n
+	uf(:,i) = lsim(F(i), u);
 end
 B = pinv(uf) * y;
 D = 0;
