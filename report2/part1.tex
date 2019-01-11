@@ -136,6 +136,7 @@ Therefore, we can first identify an ARX model without the use of instrumental va
 Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
 In order to obtain better results, this process can be repeated for several iterations. 
 For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. 
+The resulting parameter vector is $\hat{\theta}_{iv}^T = \left[-1.756, 0.8518, 0.0174, 0.0688\right]$.
 The result of the instrumental variables method compared to the measured output and the predicted output of the transfer function model can be seen in Figure~\ref{fig:output_arx_iv} and the implementation can be viewed, again, in Listing~\ref{lst:ARX} (page~\pageref{lst:ARX}).
 Note that the function performs ARX identification with and without the IV method.
 Setting \texttt{iterations} to 1 means that no IV method is used.
