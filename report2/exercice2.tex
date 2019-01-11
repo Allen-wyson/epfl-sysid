@@ -14,6 +14,7 @@
 \usepackage[left=2.5cm, right=2.5cm, bottom=2.5cm, top=2.5cm]{geometry}
 \usepackage{libertine}
 \usepackage{longtable}
+\usepackage{bbm}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
@@ -36,7 +37,6 @@
 }
 
 \newcommand*{\matlabcode}[3]{\begin{figure}[h!]\lstinputlisting[caption=#2, label=#3]{#1}\end{figure}}
-
 
 \usepackage{scrpage2}
 \pagestyle{scrheadings}
@@ -92,74 +92,55 @@
 \section{Identification of a Laser Beam Stabilizing System}
 \subsection{FIR Model Identification}\label{sec:FIR}
 In this section we identify a finite impulse response (FIR) model using the time-domain data \texttt{laserbeamdataN.mat}. This file contains the input $u$ and the output signal $y$ of a laser beam stabilizing system shown in Figure~\ref{fig:system} with a set of $ N = 500 $ data.  
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=4cm]{figures/system.png}
 	\caption{Laser beam stabilizing system }\label{fig:system}
 \end{figure}
-
 We assume a FIR model of the following form:
 \begin{equation}\label{eq:FIRmodel}
 	\hat{y}(k,\theta) = b_1 u(k-1) + \cdots + b_m u(k-m) \qquad m = 1,2,\ldots,50.
 \end{equation}
-
 This model can be rewritten as follows:
-
 \begin{align}\label{eq:FIRrewritten}
 	 \hat{y} (k,\theta) & = \phi^{T} (k) \theta 
  \intertext{where}
  	 \phi^{T} (k) & = \left[ u(k-1), u(k-2), \ldots, u(k-m) \right] \\
  	 \theta^T & = \left[ b_1, b_2, \ldots, b_m \right] .
 \end{align}
-
 First, we compute the parameter vector $\hat{\theta}$ using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$:
-
 \begin{equation}\label{eq:FIRmodel}
 	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
 \phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
 \end{equation}
-
 Here, $\pmb{\phi}$ is an asymmetric (lower) triangular Toeplitz matrix, which we generate with the MATLAB \texttt{toeplitz} command.
 In MATLAB we can solve this least squares problem by simply using the backslash operator. 
-
 Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_fir}.
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/output.pdf}
 	\caption{Predicted and measured output of the system}\label{fig:output_fir}
 \end{figure}
-
 In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. We therefore consider a loss function as 
 \begin{equation}\label{eq:J}
 	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
 \end{equation}
 Using the MATLAB command \texttt{norm} and squaring the result we obtain $ J(\theta) \approx 6.92 \cdot 10^{-6}$. 
-
 As we assume that the noise is white, we obtain an unbiased estimate of the noise variance by
 \begin{equation}\label{eq:sigma}
 	\hat{\sigma}_{noise}^{2} = \frac{1}{N-m} J(\hat{\theta}) .
 \end{equation}
-
 Using the available data this equation yields to $ \hat{\sigma}_{noise} \approx 1.24 \cdot 10^{-4} $.
-
 The covariance of the parameter estimates can then be obtained as
 \begin{equation}\label{eq:cov}
 	cov[\hat{\theta}] = \hat{\sigma}_{noise}^2 \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} = \hat{\sigma}_{noise}^2 \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} .
 \end{equation}
-
 The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is the standard deviation $ \sigma $, which we use for the $ \pm 2 \sigma $ confidence interval in Figure~\ref{fig:fir_response}. This figure shows us the finite impulse response of the system.
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/fir_response.pdf}
 	\caption{Finite impulse response of the system}\label{fig:fir_response}
 \end{figure}
-
-\matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
-
-\clearpage
 
 \subsection{ARX Model Identification}
 We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous chapter (\texttt{laserbeamdataN.mat}, $N = 500$). Therefore, we use the following predictor
@@ -179,13 +160,11 @@ We construct the matrix consisting of the input and output values according to t
 The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using 
 $\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
 Note that this predictor (in contrast to the simulated transfer function below) uses the measured past value of the output.
-
 In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. Hence, we consider a loss function as 
 \begin{equation}\label{eq:J}
 	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
 \end{equation}
 Using this, we obtain $ J(\theta) \approx 2.17 \cdot 10^{-5}$. 
-
 Afterwards we compute the output of the identified model $y_m(k)$ using the MATLAB command \texttt{lsim} and the transfer function of the model
 \begin{equation}
 	G_0(q) = \frac{b_1 q^{-1} + b_2 q^{-2}}{1 + a_1 q^{-1} + a_2 q^{-2}}
@@ -193,8 +172,7 @@ Afterwards we compute the output of the identified model $y_m(k)$ using the MATL
 \end{equation}
 We generate a transfer function object using the MATLAB command \texttt{tf} and simulate the output given the input $u(k)$ and we plot the simulated output resulting from the second order model with the measured output in Figure~\ref{fig:output_lsim2}.
 The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \approx 1.14 \cdot 10^{-4}$. 
-
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\begin{subfigure}{.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/output_arx.pdf}
@@ -208,75 +186,50 @@ The resulting sum of the squares of the error is then $ J_{tf}(\hat{\theta}) \ap
 		\vspace*{1cm}
 		\includegraphics[width=\textwidth]{figures/arx_iv.pdf}
 		\subcaption{Comparison of the measured output and the predicted output. The simulated output is shown for the model parametrized by the parameters identified using the plain ARX method and the IV method with $4$ iterations, respectively.} \label{fig:output_arx_iv}
-
 	\end{subfigure}
 	\caption{Comparison of predicted and measured output. Upper part: comparison with predictor using the past measured output and comparison only using the input data and the simulated transfer function model. Lower part:comparison of ARX model with IV method and past measured output}
 \end{figure}
-
-\vspace{0.5cm}
 In order to obtain unbiased estimates the following two conditions must be satisfied: 
-
 \begin{enumerate}
 \item $R_{\phi \phi}$ is not singular,
 \item $R_{\phi e }(0) = 0$.
 \end{enumerate}
-
 These conditions can be satisfied by replacing the non-transposed $\phi$'s in the estimator for $\hat{\theta}$ by a new vector $\phi_{iv}$ called the vector of  instrumental variables (IV):
-
 \begin{equation}
-\hat{\theta}_{iv} = \left[ \sum\limits_{k=1}^N \phi_{iv}(k)\phi^T(k) \right]^{-1} \left[\sum\limits_{k=1}^N \phi_{iv}(k) y(k) \right]
+	\hat{\theta}_{iv} = \left[ \sum\limits_{k=1}^N \phi_{iv}(k)\phi^T(k) \right]^{-1} \left[\sum\limits_{k=1}^N \phi_{iv}(k) y(k) \right]
 \end{equation}
-
 Therefore, the estimates are asymptotically unbiased, if 
 \begin{enumerate}
-\item $R_{\phi_{iv} \phi}$ is not singular,
-\item $R_{\phi_{iv} e }(0) = 0$.
+	\item $R_{\phi_{iv} \phi}$ is not singular,
+	\item $R_{\phi_{iv} e }(0) = 0$.
 \end{enumerate}
-
 That means, choosing an vector of instrumental variables, that is correlated with the regressor vector $\phi$ and uncorrelated with the noise $e$ leads to asymptotically unbiased estimates.
-
 One choice of this vector is keeping the past, non-noisy inputs in the vector and replacing the past noisy outputs using the output of an already identified model $M(q^{-1})$. A noiseless output of this model can be computed by 
-
 \begin{equation}
 y_m(k) = M(q^{-1}) u(k)
 \end{equation}
-
 and the vector $\phi_{iv}$ is defined as
-
 \begin{equation}
 \phi_{iv}^T(k) = \left[-y_M(k-1),\ldots,-y_M(k-n),u(k-d-1),\ldots,u(k-d-m)\right]
 \end{equation}
-
 with $d=0$. 
-
 Therefore, we can first identify an ARX model without the use of instrumental variables. Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
 In order to obtain better results, this process can be repeated for several iterations. For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. The result of the instrumental variables method compared to the measured output and the predicted output of the transfer function model can be seen in Figure~\ref{fig:output_arx_iv}. 
-
-
-\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method.}{lst:ARX}
 
 % TODO: The result using the instrumental variation method does not really improve the prediction.
 % --> Interpretation we have bias and no variance in the results. The model order is not a good choice and we're doing a systemcatic error.
 % --> Idea: show the third order model result for proof that this indeed works better?
 
-\clearpage
 \subsection{State-space Model Identification}
-
 In this part, a state-space model for the laser beam stabilizing system using the subspace method based on the extended observability matrix is identified. \\
-
 First, the following matrices are defined: 
-
 \begin{align}
  Y &= \left[Y_r(1), Y_r(2),\ldots,Y_r(N) \right] \\
  U &= \left[U_r(1), U_r(2),\ldots,U_r(N) \right] \\
  X &= \left[x_r(1), x_r(2),\ldots,x_r(N) \right]
 \end{align}
-
 with 
-
 \quad $Y_r(k) = \left[ \begin{array}{c} y(k) \\\ y(k+1) \\\ \vdots \\\ y(k + r -1) \end{array}\right] $ , \quad $U_r(k) = \left[ \begin{array}{c} u(k) \\\ u(k+1) \\\ \vdots \\\ u(k + r -1) \end{array}\right] $ \quad and \quad $r > n $\\
-
-
 The output of the noise-free state-space model can be written as
 \begin{equation}
 y(k+i) = CA^{i}x(k) + CA^{i-1}Bu(k) + CA^{i-2}Bu(k+1) + \cdots + CBu(k+i-1) + Du(k+i)
@@ -286,38 +239,66 @@ and as
 \textbf{Y} = O_r \textbf{X} + S_r \textbf{U}
 \label{eq:statespace}
 \end{equation}
-respectively. \\
-
+respectively. 
 To get rid of the unknown matrix $S_r$ the following $ N \times N $ matrix is formed: 
 \begin{equation}
 \textbf{U}^{\bot} = \textbf{I} - \textbf{U}^{T}(\textbf{U}\textbf{U}^{T})^{-1}\textbf{U} \quad \text{with} \quad \textbf{U}\textbf{U}^{\bot} = 0.
 \end{equation}
-
 By multiplying Equation~\ref{eq:statespace} with $\textbf{U}^{\bot}$ from the right, we obtain:
 \begin{equation}
-Q = \textbf{Y}\textbf{U}^{\bot} = O_r\textbf{X}\textbf{U}^{\bot}.
+	Q = \textbf{Y}\textbf{U}^{\bot} = O_r\textbf{X}\textbf{U}^{\bot}.
 \end{equation}
+Afterwards, we compute the singular values of $Q$ with the MATLAB command \texttt{svd}. 
+Using the singular values of the matrix, we determine the model order by choosing the smallest $n \le r$ such that
+\begin{equation}
+	\sum\limits_{k=0}^{n}\sigma_k \ge 0.95\sum\limits_{k=0}^{r}\sigma_k\, ,
+\end{equation}
+i.e. we select the smallest model order $n$ such that the first $n$ singular values sum up to at least $0.95$ of the total sum of the singular values.
+Here, we get a model order of $n = 3$.
+Then, based on the model order, the matrices for the states space model are computed as provided in the course notes.
+The code is shown in Listing~\ref{lst:ss_id} (page~\pageref{lst:ss_id}).
+We get the following solutions
+\begin{eqnarray}
+	\mathbf{A} &=& \begin{bmatrix}
+			-0.0645  & 0.0415 & -0.5397\\
+			 0.7140  & 0.2319 &  0.1857\\
+			-0.3840  & 1.2511 &  0.8986\\
+	\end{bmatrix}\,,\\
+	\mathbf{B} &=& \begin{bmatrix}
+		 -41.5124\\
+		-165.7229\\
+		-105.1717\\
+	\end{bmatrix}\,,\\
+	\mathbf{C} &=& 10^{-3} \cdot \begin{bmatrix}
+	    0.3697 & -0.0396 & -0.2972
+	\end{bmatrix}\, ,\\
+	\mathbf{D} &=& 0\, .
+\end{eqnarray}
 
-Afterwards, we compute the singular values of $Q$ with the MATLAB command \texttt{svd}. As only the first three singular values are significantly larger then zero, we assume a number of states $n$ equal to three, $n=3$. Then, the first $n=3$ columns of $Q$ are considered as an estimate of the observability matrix $O_r$.
+\begin{figure}[h]
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/ss_id_output.pdf}	
+		\subcaption{Comparison of outputs}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=\textwidth]{figures/ss_id_states.pdf}	
+		\subcaption{States}
+	\end{subfigure}
+	\caption{Caption here}
+	\label{fig:figure1}
+\end{figure}
 
-
-\newpage
 \section{Parametric Identification of an Active Suspension System}
-
 In this section we identify a model between the current reference for the DC motor and the acceleration of the sprung mass of the active suspension system in Figure~\ref{fig:active_suspension}. 
-Therefore, we use the time-domain data CE2.mat. This file contains the input $u$ and the output signal $y$ of the system with a set of $N = 2044$ data and a sampling time of $T_e = 0.03$. \\
-
+Therefore, we use the time-domain data CE2.mat. This file contains the input $u$ and the output signal $y$ of the system with a set of $N = 2044$ data and a sampling time of $T_e = 0.03$. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/active_suspension.png}
 	\caption{Output of the system}\label{fig:active_suspension}
 \end{figure}
-
-
 Before we start with the identification procedure, we remove the mean value of the input and output with the MATLAB \texttt{detrend} command and generate a data object with the MATLAB \texttt{iddata}.
 
 \subsection{Order Estimation}
-
 It is one of the goals of system identification to find the simplest model, which meets the desired criteria. Therefore, the model order estimation plays an important role in the procedure. In this section, we will focus on finding the order for the Active Suspension System. 
 
 In the first approach, we will use the ARX structure. As the loss function $ J(\hat{\theta}) /N $ for this structure is monotonically non-increasing with respect to the number of the parameter estimates (dimension of $\theta$), the model order can be estimated by analyzing the shape of the loss function. We set the delay to $n_k = 0$, the order of the nominator of the plant model $n_b$ equal to the order of the denominator $n_a$ and choose a maximum order of $n=10$. In doing so, we obtain $10$ different ARX models. The corresponding loss function can be seen in Figure~\ref{fig:loss_fcn}. 
@@ -365,7 +346,6 @@ However, using noisy data none of the values will be equal to zero. In this case
 
 In MATLAB, we create the FIR model with the command \texttt{oe}. The code can be seen in Listing~\ref{lst:delay}
 
-\matlabcode{../matlab/ce2/estimate_delay.m}{Matlab function for the estimation of the delay using a FIR model.}{lst:delay}
 
 Figure~\ref{fig:fir40} shows the impulse response and Figure~\ref{fig:fir40_dev} the parameters with their corresponding confidence interval. As the second value of the impulse response is approximately zero, we estimate the delay as $d=1$ and obtain $n_k = d + 1 = 2$. 
 
@@ -418,16 +398,11 @@ With \texttt{struc} we generate $1000$ model-order combinations for the ARX mode
 
 The order proposed by MATLAB via \texttt{struc}, \texttt{arxstruc} and \texttt{selstruc} is significantly larger ($n = 10$). This is due to the fact, that MATLAB tries to fit the noise as well and not just only the real data. It can be seen in Figure~\ref{fig:selstruc} that the output variance is almost constant for more than $10$ parameters. As we want a good trade-off between computational cost and the variance, $10$ parameters seems to be a reasonable choice. This coincides with the choice we made before, since $n_a + n_b = 6 + 4 = 10$. 
 
-\newpage
 \subsection{Parametric Identification}
-
 In this section, we want to create different parametric models using the estimated values for the parameters $n_a$, $n_b$ and $n_k$ from the previous section. Therefore, we use various MATLAB commands. We create ARX model, an Instrumental variables method model, an ARMAX model, an Output error structure model, a  Box-jenkings model and a State space model.\\
 Doing that, we divide the data in to different parts. The first one we use for the model identification and the second one for the model validation. 
 The code for this can be seen in Listing~\ref{lst:parametric}.  
 
-\matlabcode{../matlab/ce2/parametric_identification.m}{Code for partitioning the data and creating the models}{lst:parametric}
-
-\clearpage
 \subsection{Model Validation}
 As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. The second half of the data, that has not been used for the identification, is used to validate the models. \\
 First, we compare the output of the models with the measured output of the second half of the data.  Thereby, the same input is applied to the model and the system. 
@@ -467,11 +442,18 @@ According to this, the best model is the State Space Model with a fit of $74.98 
 		\includegraphics[height=5.5cm]{figures/v_ss.png}
 		\subcaption{Whiteness test and cross-correlation test of the State Space model}\label{fig:v_n4sid}
 	\end{subfigure}
-	
-	
 	\caption{Whiteness test of the residuals and cross-correlation of the residuals and past inputs of different models with the MATLAB command \texttt{resid}.}
 	\label{fig:test}
 \end{figure}
+
+\appendix
+\section{MATLAB Code}
+
+\matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
+\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method.}{lst:ARX}
+\matlabcode{../matlab/ce2/ss_identification.m}{State space identification using the subspace projection method.}{lst:ss_id}
+\matlabcode{../matlab/ce2/estimate_delay.m}{Matlab function for the estimation of the delay using a FIR model.}{lst:delay}
+\matlabcode{../matlab/ce2/parametric_identification.m}{Code for partitioning the data and creating the models}{lst:parametric}
 
 
 \end{document}
