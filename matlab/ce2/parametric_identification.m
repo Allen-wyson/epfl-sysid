@@ -11,10 +11,10 @@ Z = iddata(out,in,tsample);
 Zi = Z(1:N/2);
 Zv = Z(N/2+1:N);
 
-% Estimated parameters from Exericse 2.2.1
+% Estimated parameters from Exercise 2.2.1
 na = 6; % number of parameters in the denominator 
 nb = 4; % number of parameters in the nominator
-nk = 2; % inout-output delay 
+nk = 2; % input-output delay 
 
 % Arx Model 
 Marx = arx(Zi,[na nb nk]);

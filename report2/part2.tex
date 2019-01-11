@@ -108,9 +108,12 @@ As we want a good trade-off between computational cost and the variance, $10$ pa
 This coincides with the choice we made before, since $n_a + n_b = 6 + 4 = 10$. 
 
 \subsection{Parametric Identification}
-In this section, we want to create different parametric models using the estimated values for the parameters $n_a$, $n_b$ and $n_k$ from the previous section. Therefore, we use various MATLAB commands. We create ARX model, an Instrumental variables method model, an ARMAX model, an Output error structure model, a  Box-jenkings model and a State space models.
-Doing that, we divide the data in to different parts. The first one we use for the model identification and the second one for the model validation. 
-The code for this can be seen in Listing~\ref{lst:parametric}.  
+In this section, we want to create different parametric models using the estimated values for the parameters $n_a$, $n_b$ and $n_k$ from the previous section. 
+Therefore, we use various MATLAB commands. 
+We create an ARX model, an Instrumental variables method model, an ARMAX model, an Output error structure model, a Box-Jenkins model and a State space models.
+Doing that, we divide the data into different parts. 
+The first one we use for the model identification and the second one for the model validation. 
+Our code for data partitioning and identification with different methods can be viewed in Listing~\ref{lst:parametric} on page~\pageref{lst:parametric}.
 
 \subsection{Model Validation}
 As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. The second half of the data, that has not been used for the identification, is used to validate the models. \\
