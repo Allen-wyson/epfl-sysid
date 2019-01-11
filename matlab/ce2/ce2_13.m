@@ -6,6 +6,8 @@ load laserbeamdataN.mat
 sys = ss(A,B,C,D,1e-3);
 [y_sys, t_sys, x_sys] = lsim(sys, u);
 
+fprintf('Loss function: %d\n', norm(y_sys - y)^2);
+
 figure
 plot(t_sys, y_sys);
 hold on

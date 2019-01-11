@@ -1,49 +1,54 @@
 %!TEX root = ./exercice2.tex
 
 \section{Identification of a Laser Beam Stabilizing System}
+The following section explain identification algorithms using data from the laser beam stabilizing system shown in Figure~\ref{fig:system}.
+We have access to time-domain data in the file \texttt{laserbeamdataN.mat}.
+This file contains the input $u$ and the output signal $y$ of the laser beam stabilizing system and has $N=500$ samples.
 
-\subsection{FIR Model Identification}\label{sec:FIR}
-In this section we identify a finite impulse response (FIR) model using the time-domain data \texttt{laserbeamdataN.mat}. This file contains the input $u$ and the output signal $y$ of a laser beam stabilizing system shown in Figure~\ref{fig:system} with a set of $ N = 500 $ data.  
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=4cm]{figures/system.png}
 	\caption{Laser beam stabilizing system }\label{fig:system}
 \end{figure}
-We assume a FIR model of the following form:
+
+\subsection{FIR Model Identification}\label{sec:FIR}
+In this section we identify a finite impulse response (FIR) model of the form
 \begin{equation}\label{eq:FIRmodel}
-	\hat{y}(k,\theta) = b_1 u(k-1) + \cdots + b_m u(k-m) \qquad m = 1,2,\ldots,50.
+	\hat{y}(k,\theta) = b_1 u(k-1) + \cdots + b_m u(k-m) \qquad m = 1,2,\ldots,50 \, ,
 \end{equation}
-This model can be rewritten as follows:
+which can be rewritten to
 \begin{align}\label{eq:FIRrewritten}
 	 \hat{y} (k,\theta) & = \phi^{T} (k) \theta 
  \intertext{where}
  	 \phi^{T} (k) & = \left[ u(k-1), u(k-2), \ldots, u(k-m) \right] \\
  	 \theta^T & = \left[ b_1, b_2, \ldots, b_m \right] .
 \end{align}
-First, we compute the parameter vector $\hat{\theta}$ using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$:
+
+First, we compute the parameter vector $\hat{\theta}$ using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$
 \begin{equation}\label{eq:FIRmodel}
 	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
 \phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
 \end{equation}
 Here, $\pmb{\phi}$ is an asymmetric (lower) triangular Toeplitz matrix, which we generate with the MATLAB \texttt{toeplitz} command.
 In MATLAB we can solve this least squares problem by simply using the backslash operator. 
-Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_fir}.
+Afterwards, we compute the predicted output of our identified model $\hat{y} (k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. 
+The code is shown in Listing~\ref{lst:FIR} (page~\pageref{lst:FIR}) and the result can be seen in Figure~\ref{fig:output_fir}.
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/output.pdf}
 	\caption{Predicted and measured output of the system}\label{fig:output_fir}
 \end{figure}
-In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. We therefore consider a loss function as 
+In order to estimate the quality of our predictor, we need a fit criterion, which should minimized. We therefore consider the function
 \begin{equation}\label{eq:J}
 	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
 \end{equation}
 Using the MATLAB command \texttt{norm} and squaring the result we obtain $ J(\theta) \approx 6.92 \cdot 10^{-6}$. 
-As we assume that the noise is white, we obtain an unbiased estimate of the noise variance by
+As we assume that the noise is white, we obtain an unbiased estimate of the noise variance using
 \begin{equation}\label{eq:sigma}
 	\hat{\sigma}_{noise}^{2} = \frac{1}{N-m} J(\hat{\theta}) .
 \end{equation}
 Using the available data this equation yields to $ \hat{\sigma}_{noise} \approx 1.24 \cdot 10^{-4} $.
-The covariance of the parameter estimates can then be obtained as
+The covariance of the parameter estimates can then be obtained using
 \begin{equation}\label{eq:cov}
 	cov[\hat{\theta}] = \hat{\sigma}_{noise}^2 \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} = \hat{\sigma}_{noise}^2 \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} .
 \end{equation}
@@ -51,11 +56,12 @@ The square root of the diagonal elements of the $cov[\hat{\theta}]$ matrix is th
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=5.5cm]{figures/fir_response.pdf}
-	\caption{Finite impulse response of the system}\label{fig:fir_response}
+	\caption{Identified finite impulse response of the laser beam stabilization system. The error bars show the $2\sigma$ confidence interval of the estimates.}\label{fig:fir_response}
 \end{figure}
 
 \subsection{ARX Model Identification}
-We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous chapter (\texttt{laserbeamdataN.mat}, $N = 500$). Therefore, we use the following predictor
+We now assume a second order auto-regressive with external input (ARX) model for the same data as in the previous section. 
+Consequently, we use the following predictor
 \begin{align}\label{eq:arx}
 	\hat{y}(k,\theta) & = -a_1 y(k-1) - a_2 y(k-2) + b_1 u(k-1) + b_2u (k-2) = \phi^T(k) \theta
 	\intertext{where}
@@ -63,16 +69,17 @@ We now assume a second order auto-regressive with external input (ARX) model for
  	 \theta^T & = \left[ a_1, a_2, b_1, b_2\right] .
 \end{align}
 We observe that the system has no modeled delay as $d = 0$.
-Using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$, we compute, like we did it already in Section~\ref{sec:FIR}, the parameter vector $\hat{\theta}$:
+Using the least squares algorithm and the Moore-Penrose pseudo inverse $\pmb{\phi}^+$ of $\pmb{\phi}$, we compute, like we already did in Section~\ref{sec:FIR}, the parameter vector $\hat{\theta}$ according to
 \begin{equation}\label{eq:ARXmodel}
 	\hat{\theta} = \left[ \sum\limits_{k=1}^N \phi(k)\phi^T(k) \right]^{-1} \sum\limits_{k=1}^N 
 \phi(k) y(k) = \left( \pmb{\phi}^T \pmb{\phi} \right)^{-1} \pmb{\phi}^T \textbf{Y} = \pmb{\phi}^+ \textbf{Y}.
 \end{equation}
 We construct the matrix consisting of the input and output values according to the predictor structure and solve for the parameters using the backlash operator.
-The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using 
-$\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. The result can be seen in Figure~\ref{fig:output_arx}.
+Listing~\ref{lst:ARX} on page~\pageref{lst:ARX} shows the implementation in Matlab.
+The predicted output of our identified model $\hat{y}(k,\hat{\theta})$ is then computed using $\hat{y}(k,\hat{\theta}) = \phi^{T} (k) \hat{\theta}$. 
+The result can be seen in Figure~\ref{fig:output_arx}.
 Note that this predictor (in contrast to the simulated transfer function below) uses the measured past value of the output.
-In order to estimate the quality of our predictor, we need a fit criterion, which should minimised. Hence, we consider a loss function as 
+In order to estimate the quality of our predictor, we need a fit criterion, which should minimized. Hence, we consider a loss function as 
 \begin{equation}\label{eq:J}
 	J(\theta) = \sum\limits_{k=1}^N \left[y(k) - \hat{y}(k,\theta) \right]^2.
 \end{equation}
@@ -125,12 +132,14 @@ and the vector $\phi_{iv}$ is defined as
 \phi_{iv}^T(k) = \left[-y_M(k-1),\ldots,-y_M(k-n),u(k-d-1),\ldots,u(k-d-m)\right]
 \end{equation}
 with $d=0$. 
-Therefore, we can first identify an ARX model without the use of instrumental variables. Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
-In order to obtain better results, this process can be repeated for several iterations. For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. The result of the instrumental variables method compared to the measured output and the predicted output of the transfer function model can be seen in Figure~\ref{fig:output_arx_iv}. 
-
-% TODO: The result using the instrumental variation method does not really improve the prediction.
-% --> Interpretation we have bias and no variance in the results. The model order is not a good choice and we're doing a systemcatic error.
-% --> Idea: show the third order model result for proof that this indeed works better?
+Therefore, we can first identify an ARX model without the use of instrumental variables. 
+Afterwards, we use the identified parameters as instrumental variables and repeat the ARX fitting.
+In order to obtain better results, this process can be repeated for several iterations. 
+For a good trade off between computational cost and accuracy, we choose an IV method with $4$ iterations. 
+The result of the instrumental variables method compared to the measured output and the predicted output of the transfer function model can be seen in Figure~\ref{fig:output_arx_iv} and the implementation can be viewed, again, in Listing~\ref{lst:ARX} (page~\pageref{lst:ARX}).
+Note that the function performs ARX identification with and without the IV method.
+Setting \texttt{iterations} to 1 means that no IV method is used.
+We can observe, that the predicted output of the model identified using the IV method is closer to the measured output.
 
 \subsection{State-space Model Identification}
 In this part, a state-space model for the laser beam stabilizing system using the subspace method based on the extended observability matrix is identified. \\
@@ -163,9 +172,9 @@ By multiplying Equation~\ref{eq:statespace} with $\textbf{U}^{\bot}$ from the ri
 Afterwards, we compute the singular values of $Q$ with the MATLAB command \texttt{svd}. 
 Using the singular values of the matrix, we determine the model order by choosing the smallest $n \le r$ such that
 \begin{equation}
-	\sum\limits_{k=0}^{n}\sigma_k \ge 0.95\sum\limits_{k=0}^{r}\sigma_k\, ,
+	\sum\limits_{k=0}^{n}\sigma_k \ge 0.8\sum\limits_{k=0}^{r}\sigma_k\, ,
 \end{equation}
-i.e. we select the smallest model order $n$ such that the first $n$ singular values sum up to at least $0.95$ of the total sum of the singular values.
+i.e. we select the smallest model order $n$ such that the first $n$ singular values sum up to at least $0.8$ of the total sum of the singular values.
 Here, we get a model order of $n = 3$.
 Then, based on the model order, the matrices for the states space model are computed as provided in the course notes.
 The code is shown in Listing~\ref{lst:ss_id} (page~\pageref{lst:ss_id}).
@@ -187,6 +196,9 @@ We get the following solutions
 	\mathbf{D} &=& 0\, .
 \end{eqnarray}
 
+Figure~\ref{fig:ss_id_results} shows the results of the simulation of the identified state-space model using the input data $u$.
+We get a residual loss of $J(\theta) = 8.23 \cdot 10^{-6}$.
+
 \begin{figure}[h]
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=\textwidth]{figures/ss_id_output.pdf}	
@@ -196,6 +208,6 @@ We get the following solutions
 		\includegraphics[width=\textwidth]{figures/ss_id_states.pdf}	
 		\subcaption{States}
 	\end{subfigure}
-	\caption{Caption here}
-	\label{fig:figure1}
+	\caption{Simulation on the identified state-space model using the input data $u$. On the left the predicted output is compared to the measured output and on the right the evolution of state variable is shown.}
+	\label{fig:ss_id_results}
 \end{figure}

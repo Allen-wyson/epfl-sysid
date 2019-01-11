@@ -1,5 +1,6 @@
 function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iterations) 
     % iterations: amount of iterations for the IV technique
+    %    (set to 1 for no IV method)
     % yh: predicted output using measured past output
     % ysim: predicted output using the identified transfer function
     % theta: parameter vector
@@ -25,7 +26,7 @@ function [yh, ym, theta, sys, J, J_tf] = ARX_model_identification(u, y, iteratio
         phi_iv = create_phi_matrix(u, out);
         
         % Computing the parameters using least square
-        theta = inv(phi_iv' * phi) * phi_iv' * y; 
+        theta = inv(phi_iv' * phi) * phi_iv' * y;
 
         % Transfer function model
         f_sampling = 1e3;

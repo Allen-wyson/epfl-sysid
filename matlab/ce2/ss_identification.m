@@ -5,6 +5,7 @@ function [A, B, C, D] = ss_identification(u, y)
 
 	N = size(u,1);
 	r = 10;
+	thrshld = 0.8;
 
 	Y = zeros(r, N);
 	U = zeros(r, N);
@@ -26,8 +27,8 @@ function [A, B, C, D] = ss_identification(u, y)
 	U_orth = eye(N) - U' * inv(U*U') * U;
 	Q = Y * U_orth;
 	singular_values = svd(Q);
-	n = sum(cumsum(singular_values)>=0.95*(sum(singular_values))); 
-	fprintf('Estimated order of the system: %d\n', n)
+	n = find(cumsum(singular_values)./sum(singular_values) >= thrshld, 1, 'first');
+	fprintf('Estimated order of the system (using %d%%): %d\n', 100*thrshld, n)
 	O = Q(:,1:n);
 
 	% Compute estimates for A and C
