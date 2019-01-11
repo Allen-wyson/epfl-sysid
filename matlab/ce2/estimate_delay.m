@@ -15,8 +15,8 @@ m = 40; % Number of parameters
 FIR = oe(Z,[m 0 1]);
 
 figure;
-stairs(0:m,FIR.b);
+stairs(0:m,FIR.b); grid;
 title('FIR model with m = 40');
 figure;
 title('Paramters and their confidence interval');
-errorbar(FIR.b(1:6), 2*FIR.db(1:6));
+errorbar(FIR.b(1:7), 2*FIR.db(1:7)); grid;

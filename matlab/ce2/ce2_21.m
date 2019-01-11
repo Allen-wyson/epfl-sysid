@@ -40,7 +40,6 @@ showConfidence(h,2);
 figure;
 impulse(M6)
 
-%richtig
 M7 = armax(Z,[7 7 7 1]);
 figure;
 h = iopzplot(M7);
