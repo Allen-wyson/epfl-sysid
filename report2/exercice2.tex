@@ -19,7 +19,8 @@
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
-\lstset{backgroundcolor=\color{white},
+\lstset{
+  backgroundcolor=\color{white},
   keepspaces=true,
   captionpos=b,
   keywordstyle=\color{blue},
@@ -48,7 +49,6 @@
 
 \begin{document}
 
-
 \input{titlepage}
 \tableofcontents
 \input{part1}
@@ -57,7 +57,7 @@
 \appendix
 \section{MATLAB Code}
 \matlabcode{../matlab/ce2/FIR_model_identification.m}{Computing the finite impulse response of the system}{lst:FIR}
-\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method.}{lst:ARX}
+\matlabcode{../matlab/ce2/ARX_model_identification.m}{Matlab function for the ARX model identification technique including the instrumental variables method. Setting the iterations parameter to 1 will compute the plain ARX model without instrumental variables. A value greater than one uses IV to obtain asymptotically unbiased results.}{lst:ARX}
 \matlabcode{../matlab/ce2/ss_identification.m}{State space identification using the subspace projection method.}{lst:ss_id}
 \matlabcode{../matlab/ce2/estimate_delay.m}{Matlab function for the estimation of the delay using a FIR model.}{lst:delay}
 \matlabcode{../matlab/ce2/parametric_identification.m}{Code for partitioning the data and creating the models}{lst:parametric}
