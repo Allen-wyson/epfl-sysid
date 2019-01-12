@@ -56,8 +56,21 @@ title('State Space');
 % figure;
 % compare(Zi,Marx,Miv4,Marmax,Moe,Mbj,Mn4sid);
 
+% figure;
+% compare(Zv,Marx,Miv4,Marmax,Moe,Mbj,Mn4sid);
+
 figure;
-compare(Zv,Marx,Miv4,Marmax,Moe,Mbj,Mn4sid);
+compare(Zv,Marx);
+figure;
+compare(Zv,Miv4);
+figure;
+compare(Zv,Marmax);
+figure;
+compare(Zv,Moe);
+figure;
+compare(Zv,Mbj);
+figure;
+compare(Zv,Mn4sid);
 
 %% Bode
 
