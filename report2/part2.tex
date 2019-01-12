@@ -117,8 +117,14 @@ The first one we use for the model identification and the second one for the mod
 Our code for data partitioning and identification with different methods can be viewed in Listing~\ref{lst:parametric} on page~\pageref{lst:parametric}.
 
 \subsection{Model Validation}
-As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. The second half of the data, that has not been used for the identification, is used to validate the models. \\
-First, we compare the output of the models with the measured output of the second half of the data.  Thereby, the same input is applied to the model and the system. The results can be seen in Figure~\ref{fig:comparison}
+
+\paragraph{Time-Domain Validation:}
+As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. 
+The second half of the data, that has not been used for the identification, is used to validate the models. 
+First, we compare the output of the models with the measured output of the second half of the data.  
+Thereby, the same input is applied to the model and the system. 
+The results can be seen in Figure~\ref{fig:comparison}
+According to this, the best model is the State Space Model with a fit of $74.98 \% $.
 
 \begin{figure}[h]
 	\centering
@@ -149,19 +155,27 @@ First, we compare the output of the models with the measured output of the secon
 	\caption{Comparison of the measured output with the output of the models with the same input each time. The MATLAB command \texttt{compare} is used. }\label{fig:comparison}
 \end{figure}
 
-According to this, the best model is the State Space Model with a fit of $74.98 \% $. \\
+\paragraph{Frequency-Domain Validation: } Figure~\ref{fig:comparison_freq}.
 
-Afterwards, we want to validate our models by the whiteness test of the residuals  $\epsilon$ and the cross-correlation of the residuals and the past inputs $u$.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{figures/bode_parametric.pdf}
+	\caption{Comparison of the frequency response of the identified model and the frequency response of the validation data obtained using the spectral analysis method.}
+	\label{fig:comparison_freq}
+\end{figure}
 
-\paragraph{Cross-correlation test} If the plant model is correctly identified, there is no information from the past inputs in the residuals and therefore, the residuals should be uncorrelated with those inputs. 
-For the cross-correlation test, an estimate of the cross-correlation between the residual and the input signal $\hat{R}_{\epsilon u}(h)$ is computed. The cross-correlation should be zero in order to validate the model. In practice, a statistical test with a $95\%$ confidence interval is used, where the values for the cross-correlation must lie within. This test can be used to validate the plant model for all structures. However, it gives no information about the validation of the noise model. 
-The results of the cross-correlation tests can be seen in the right part of Figures~\ref{fig:v_arx} to \ref{fig:v_n4sid}. 
+\paragraph{Whiteness and Cross-Correlation Test: }
+Afterwards, we want to validate our models by the whiteness test of the residuals $\epsilon$ and the cross-correlation of the residuals and the past inputs $u$.
 
-\paragraph{Whiteness test} For the models with a noise model (ARX, ARMAX and Box-Jenkins) we assume that the system noise is a white noise filtered by some transfer function. Therefore, if the parameters of the plant model and those of the noise model are correctly identified, the residual $\epsilon (k, \hat{\theta}) = y(k) - \hat{y}(k, \hat{\theta})$ will be white.
-The whiteness test checks the whiteness of the residual by computing the autocorrelation of $\epsilon$. This autocorrelation function will be zero for all $h \neq 0$, if $\epsilon$ is white. In practice, again a $95\%$ confidence interval is used, where the values for the cross-correlation must lie within.
-Therefore, this test is only reasonable for structures with a noise model.
-The results of the whiteness tests can be seen in the left part of Figures~\ref{fig:v_arx} to \ref{fig:v_n4sid}. 
-
+\begin{itemize}
+	\item Cross-correlation test: If the plant model is correctly identified, there is no information from the past inputs in the residuals and therefore, the residuals should be uncorrelated with those inputs. 
+	For the cross-correlation test, an estimate of the cross-correlation between the residual and the input signal $\hat{R}_{\epsilon u}(h)$ is computed. The cross-correlation should be zero in order to validate the model. In practice, a statistical test with a $95\%$ confidence interval is used, where the values for the cross-correlation must lie within. This test can be used to validate the plant model for all structures. However, it gives no information about the validation of the noise model. 
+	The results of the cross-correlation tests can be seen in the right part of Figures~\ref{fig:v_arx} to \ref{fig:v_n4sid}. 
+	\item Whiteness test: For the models with a noise model (ARX, ARMAX and Box-Jenkins) we assume that the system noise is a white noise filtered by some transfer function. Therefore, if the parameters of the plant model and those of the noise model are correctly identified, the residual $\epsilon (k, \hat{\theta}) = y(k) - \hat{y}(k, \hat{\theta})$ will be white.
+	The whiteness test checks the whiteness of the residual by computing the autocorrelation of $\epsilon$. This autocorrelation function will be zero for all $h \neq 0$, if $\epsilon$ is white. In practice, again a $95\%$ confidence interval is used, where the values for the cross-correlation must lie within.
+	Therefore, this test is only reasonable for structures with a noise model.
+	The results of the whiteness tests can be seen in the left part of Figures~\ref{fig:v_arx} to \ref{fig:v_n4sid}. 
+\end{itemize}
 
 \begin{figure}[h]
 	\centering
@@ -193,17 +207,15 @@ The results of the whiteness tests can be seen in the left part of Figures~\ref{
 	\label{fig:test}
 \end{figure}
 
-\paragraph{ARX model}
-
-\paragraph{Instrumental variables}
-
-\paragraph{ARMAX model}
-
-\paragraph{Output error structure} For the output error structure the whiteness test (left part of Figure~\ref{fig:v_oe}) can be ignored, as this structure does not include a noise model. However, the condition of the cross-correlation test is not met as there are several values of the cross-correlation function lying outside the confidence interval (right part in Figure~\ref{fig:v_oe}). This is why the output error structure is no validated model. 
-
-\paragraph{Box Jenkins} For the Box Jenkins model the residual is white as all values of the autocorrelation function $R_{\epsilon \epsilon}$ are within the confidence interval (left part of Figure~\ref{fig:v_bj}). Nevertheless, this model is not validated in the cross-correlation test, as several values of the cross-correlation function are bigger than the confidence interval (right part in Figure~\ref{fig:v_bj}).
-
-\paragraph{State space model}
+Based on the results of the statistical tests of the identified models, we discuss about their validation below.
+\begin{itemize}
+\item{ARX model}
+\item{Instrumental variables}
+\item{ARMAX model}
+\item{Output error structure} For the output error structure the whiteness test (left part of Figure~\ref{fig:v_oe}) can be ignored, as this structure does not include a noise model. However, the condition of the cross-correlation test is not met as there are several values of the cross-correlation function lying outside the confidence interval (right part in Figure~\ref{fig:v_oe}). This is why the output error structure is no validated model. 
+\item{Box Jenkins} For the Box Jenkins model the residual is white as all values of the autocorrelation function $R_{\epsilon \epsilon}$ are within the confidence interval (left part of Figure~\ref{fig:v_bj}). Nevertheless, this model is not validated in the cross-correlation test, as several values of the cross-correlation function are bigger than the confidence interval (right part in Figure~\ref{fig:v_bj}).
+\item{State space model}
 Like for the output error structure, the whiteness test (left part of Figure~\ref{fig:v_n4sid}) does not make sense for the state space model, as this structure does not include a noise model. However, the cross-correlation test is not validated as there are several values of the cross-correlation function lying outside the confidence interval (right part in Figure~\ref{fig:v_n4sid}). This is why the state space model is not a validated model.
+\end{itemize}
 
 

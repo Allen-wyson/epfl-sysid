@@ -2,17 +2,19 @@ parametric_identification
 
 addpath('../ce1')
 
-[Gv, fv] = spectral_analysis(Zv.u, Zv.y, 1, 'hann', 50);
-Gv1 = abs(Gv);
-[Gv, fv] = spectral_analysis(Zv.u, Zv.y, 1, 'hann', 100);
-Gv2 = abs(Gv);
-[Gv, fv] = spectral_analysis(Zv.u, Zv.y, 1, 'hann', 150);
-Gv3 = abs(Gv);
+[Gv, fv] = spectral_analysis(Zv.u, Zv.y, 2, 'hann', 50);
+validation_system = frd(Gv, fv/tsample);
+validation_system.Name = 'Validation Data';
 
 figure
-loglog(fv, Gv1)
+bode(validation_system, '--')
 hold on
-loglog(fv, Gv2)
-loglog(fv, Gv3)
-legend('50', '100', '150')
+bode(Marx)
+bode(Miv4)
+bode(Marmax)
+bode(Moe)
+bode(Mbj)
+bode(Mn4sid)
 grid
+legend
+
