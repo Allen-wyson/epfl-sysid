@@ -8,8 +8,8 @@ out = detrend(y,'constant');
 Z = iddata(out,in,tsample);
 
 % Data partitioning
-Zi = Z(1:N/2);
-Zv = Z(N/2+1:N);
+Zi = Z(1:ceil(N/2));
+Zv = Z(ceil(N/2)+1:N);
 
 % Estimated parameters from Exercise 2.2.1
 na = 6; % number of parameters in the denominator 

@@ -116,7 +116,11 @@ Doing that, we divide the data into different parts.
 The first one we use for the model identification and the second one for the model validation. 
 Our code for data partitioning and identification with different methods can be viewed in Listing~\ref{lst:parametric} on page~\pageref{lst:parametric}.
 
+\FloatBarrier
 \subsection{Model Validation}
+Below, the identified models are evaluated in a validation procedure.
+Therefore, the model identified using the code from the previous section are used.
+The diagrams used for validation are create using the code shown in Listing~\ref{lst:validation} (page~\pageref{lst:validation}).
 
 \paragraph{Time-Domain Validation:}
 As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. 
@@ -128,34 +132,18 @@ According to this, the best model is the State Space Model with a fit of $74.98 
 
 \begin{figure}[h]
 	\centering
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_arx.png}
-		\subcaption{Comparison of the output of the ARX model with the validation data $Zv$}\label{fig:c_arx}
-	\end{subfigure}\hfill
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_iv4.png}
-		\subcaption{Comparison of the output of the Instrumental Variables method model with the validation data $Zv$}\label{fig:c_iv4}
-	\end{subfigure}
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_armax.png}
-		\subcaption{Comparison of the output of the ARMAX model with the validation data $Zv$}\label{fig:c_armax}
-	\end{subfigure}\hfill
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_oe.png}
-		\subcaption{Comparison of the output of the Output Error model with the validation data $Zv$}\label{fig:c_oe}
-	\end{subfigure}
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_bj.png}
-		\subcaption{Comparison of the output of the Box Jenkins model with the validation data $Zv$}\label{fig:c_bj}
-	\end{subfigure}\hfill
-	\begin{subfigure}{.49\textwidth}
-		\includegraphics[height=5.5cm]{figures/c_n4sid.png}
-		\subcaption{Comparison of the output of the State Space model with the validation data $Zv$}\label{fig:c_n4sid}
-	\end{subfigure}
-	\caption{Comparison of the measured output with the output of the models with the same input each time. The MATLAB command \texttt{compare} is used. }\label{fig:comparison}
+	\includegraphics[width=\textwidth]{figures/time_domain_compare.pdf}
+ 	\caption{Comparison of the measured output with the output of the models with the same input each time. The MATLAB command \texttt{compare} is used (zoomed and clipped).}
+ 	\label{fig:comparison}
 \end{figure}
 
-\paragraph{Frequency-Domain Validation: } Figure~\ref{fig:comparison_freq}.
+\paragraph{Frequency-Domain Validation: } The Bode diagrams of the identified models are shown in Figure~\ref{fig:comparison_freq}.
+Additionally, the frequency response of the test system is estimated directly using the validation data and the spectral analysis method implemented in the previous set of assignments.
+The first observation is, that the output error structure (OE) model behaves significantly different in higher frequencies close the Nyquist frequency.
+On the other hand, for low frequencies the system gain converges to different magnitudes for different models in a wide dynamic range.
+In the medium frequencies the behavior of all models is similar and they all the resonant modes, not at exactly the same location though.
+It is not easy to determine a best performing model based on the results in the Bode diagram.
+We can only conclude that the output error model is not validated.
 
 \begin{figure}[h]
 	\centering
@@ -166,7 +154,6 @@ According to this, the best model is the State Space Model with a fit of $74.98 
 
 \paragraph{Whiteness and Cross-Correlation Test: }
 Afterwards, we want to validate our models by the whiteness test of the residuals $\epsilon$ and the cross-correlation of the residuals and the past inputs $u$.
-
 \begin{itemize}
 	\item Cross-correlation test: If the plant model is correctly identified, there is no information from the past inputs in the residuals and therefore, the residuals should be uncorrelated with those inputs. 
 	For the cross-correlation test, an estimate of the cross-correlation between the residual and the input signal $\hat{R}_{\epsilon u}(h)$ is computed. The cross-correlation should be zero in order to validate the model. In practice, a statistical test with a $95\%$ confidence interval is used, where the values for the cross-correlation must lie within. This test can be used to validate the plant model for all structures. However, it gives no information about the validation of the noise model. 
@@ -207,15 +194,35 @@ Afterwards, we want to validate our models by the whiteness test of the residual
 	\label{fig:test}
 \end{figure}
 
-Based on the results of the statistical tests of the identified models, we discuss about their validation below.
+\noindent Based on the results of the statistical tests of the identified models, we discuss about their validation below.
+First observe, that no of the models is validated in a strict sense as we have samples outside of the confidence interval for every model.
+Further, based on the whiteness test of the output error structure, which does not assume a noise model, we can see that the true noise added to the system is indeed not white.
+The figures on the left show the whiteness test, while the figures on the right show the cross-correlation test, respectively.
 \begin{itemize}
-\item{ARX model}
-\item{Instrumental variables}
-\item{ARMAX model}
-\item{Output error structure} For the output error structure the whiteness test (left part of Figure~\ref{fig:v_oe}) can be ignored, as this structure does not include a noise model. However, the condition of the cross-correlation test is not met as there are several values of the cross-correlation function lying outside the confidence interval (right part in Figure~\ref{fig:v_oe}). This is why the output error structure is no validated model. 
-\item{Box Jenkins} For the Box Jenkins model the residual is white as all values of the autocorrelation function $R_{\epsilon \epsilon}$ are within the confidence interval (left part of Figure~\ref{fig:v_bj}). Nevertheless, this model is not validated in the cross-correlation test, as several values of the cross-correlation function are bigger than the confidence interval (right part in Figure~\ref{fig:v_bj}).
-\item{State space model}
-Like for the output error structure, the whiteness test (left part of Figure~\ref{fig:v_n4sid}) does not make sense for the state space model, as this structure does not include a noise model. However, the cross-correlation test is not validated as there are several values of the cross-correlation function lying outside the confidence interval (right part in Figure~\ref{fig:v_n4sid}). This is why the state space model is not a validated model.
+\item{ARX model (\ref{fig:v_arx}): } The whiteness test shows that the residual is not really white and the cross-correlation test shows that we are not modeling every modes of the system properly. This is an indication that the structure predefined by the ARX model is not appropriate to the system here.
+\item{Instrumental variables (\ref{fig:v_iv4}): } The statistical tests for the instrumental variables method look comparable to the results of the ARX model in the previous Figure, with the small difference that the outcome of the cross-correlation test looks slightly better. This, again, indicates that the model structure impose by the underlying ARX model is not appropriate as the IV method uses ARX as well. The choice of $\frac{1}{A(q^{-1})}$ seems inappropriate here.
+\item{ARMAX model (\ref{fig:v_armax}): } The whiteness test is less violated compared to the both ARX model structures, the plain ARX method and the IV method. The cross-correlation test, however, still looks similar to the results of the ARX model validation. We conclude that the choice of $\frac{C(q^{-1})}{A(q^{-1})}$ as noise model is better, but still not appropriate.
+\item{Output error structure (\ref{fig:v_oe}): } For the output error structure the whiteness test can be ignored, as this structure does not include a noise model. However, the condition of the cross-correlation test is not met as there are several values of the cross-correlation function lying outside the confidence interval. This is why the output error structure is no validated model. 
+\item{Box Jenkins (\ref{fig:v_bj}): } For the Box Jenkins model the residual is white as all values of the autocorrelation function $R_{\epsilon \epsilon}$ are within the confidence interval. Nevertheless, this model is not validated in the cross-correlation test, as several values of the cross-correlation function are bigger than the confidence interval.
+\item{State space model (\ref{fig:v_n4sid}): } Like for the output error structure, the whiteness test does not make sense for the state space model, as this structure does not include a noise model. However, the cross-correlation test is not validated as there are several values of the cross-correlation function lying outside the confidence interval. This is why the state space model is not a validated model.
 \end{itemize}
+
+\paragraph{Conclusion on the model validation: } In the first validation step, using the time-domain validation, we saw that basically all models predict the output quite well.
+The prediction accuracies lie within the range of $69\%$ and $75\%$, while the Box-Jenkins model performs worst ($69.18\%$) and the state space model performs best ($74.98\%$).
+Then, using frequency-domain validation, we saw that the output error structure is significantly off the frequency response for higher frequencies close to the Nyquist frequency.
+Further, for low frequencies $\omega \rightarrow 0$ the models converge to different system gain magnitudes.
+We can not use this information for validation, as we do not now the true DC gain of the system and it is hard to estimate is based on the small amount of validation data and the small magnitude.
+Eventually, using the statistical whiteness and cross-correlation tests, we saw that the residual for ARX, ARX using IV and ARMAX is significantly non-white.
+We conclude that the model assumptions for the noise model are not appropriate for ARX and ARMAX.
+The whiteness test for the output error structure shows that the noise in the system is indeed non-white.
+Finally, none of the models passes the statistical tests.
+Dependent on the objective of the identified model, we would go for the state space or the Box Jenkins model.
+The advantage of the state space model is, that it can directly be used for controller design or simulation.
+
+There are several possible explanation why we can not exactly model the system accurately using the methods above.
+One such explanation is that the true system might be nonlinear and can therefore never be exactly modeled by the linear models used here.
+Further, we might have nasty noise on the signals being non zero-mean or dependent on time or other variables.
+
+
 
 
