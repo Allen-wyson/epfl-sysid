@@ -119,8 +119,8 @@ Our code for data partitioning and identification with different methods can be 
 \FloatBarrier
 \subsection{Model Validation}
 Below, the identified models are evaluated in a validation procedure.
-Therefore, the model identified using the code from the previous section are used.
-The diagrams used for validation are create using the code shown in Listing~\ref{lst:validation} (page~\pageref{lst:validation}).
+Therefore, the models identified with the code from the previous section are used.
+The diagrams used for validation are created using the code shown in Listing~\ref{lst:validation} (page~\pageref{lst:validation}).
 
 \paragraph{Time-Domain Validation:}
 As a final step, we want to validate the identified parametric models. Therefore, the data set of $N = 2044$ is again partitioned in two parts. 
@@ -139,9 +139,9 @@ According to this, the best model is the State Space Model with a fit of $74.98 
 
 \paragraph{Frequency-Domain Validation: } The Bode diagrams of the identified models are shown in Figure~\ref{fig:comparison_freq}.
 Additionally, the frequency response of the test system is estimated directly using the validation data and the spectral analysis method implemented in the previous set of assignments.
-The first observation is, that the output error structure (OE) model behaves significantly different in higher frequencies close the Nyquist frequency.
+The first observation is, that the output error structure (OE) model behaves significantly different in higher frequencies close to the Nyquist frequency.
 On the other hand, for low frequencies the system gain converges to different magnitudes for different models in a wide dynamic range.
-In the medium frequencies the behavior of all models is similar and they all the resonant modes, not at exactly the same location though.
+In the medium frequencies the behaviour of all models is similar and they all show the resonant modes, not at exactly the same location though.
 It is not easy to determine a best performing model based on the results in the Bode diagram.
 We can only conclude that the output error model is not validated.
 
@@ -195,7 +195,7 @@ Afterwards, we want to validate our models by the whiteness test of the residual
 \end{figure}
 
 \noindent Based on the results of the statistical tests of the identified models, we discuss about their validation below.
-First observe, that no of the models is validated in a strict sense as we have samples outside of the confidence interval for every model.
+First we observe, that no of the models is validated in a strict sense as we have samples outside of the confidence interval for every model.
 Further, based on the whiteness test of the output error structure, which does not assume a noise model, we can see that the true noise added to the system is indeed not white.
 The figures on the left show the whiteness test, while the figures on the right show the cross-correlation test, respectively.
 \begin{itemize}
@@ -207,11 +207,11 @@ The figures on the left show the whiteness test, while the figures on the right 
 \item{State space model (\ref{fig:v_n4sid}): } Like for the output error structure, the whiteness test does not make sense for the state space model, as this structure does not include a noise model. However, the cross-correlation test is not validated as there are several values of the cross-correlation function lying outside the confidence interval. This is why the state space model is not a validated model.
 \end{itemize}
 
-\paragraph{Conclusion on the model validation: } In the first validation step, using the time-domain validation, we saw that basically all models predict the output quite well.
+\paragraph{Conclusion on the model validation: } In the first validation step, using the time-domain validation, we can see that basically all models predict the output quite well.
 The prediction accuracies lie within the range of $69\%$ and $75\%$, while the Box-Jenkins model performs worst ($69.18\%$) and the state space model performs best ($74.98\%$).
-Then, using frequency-domain validation, we saw that the output error structure is significantly off the frequency response for higher frequencies close to the Nyquist frequency.
+Then, using frequency-domain validation, we can see that the output error structure is significantly off the frequency response for higher frequencies close to the Nyquist frequency.
 Further, for low frequencies $\omega \rightarrow 0$ the models converge to different system gain magnitudes.
-We can not use this information for validation, as we do not now the true DC gain of the system and it is hard to estimate is based on the small amount of validation data and the small magnitude.
+We can not use this information for validation, as we do not now the true DC gain of the system and it is hard to estimate it based on the small amount of validation data and the small magnitude.
 Eventually, using the statistical whiteness and cross-correlation tests, we saw that the residual for ARX, ARX using IV and ARMAX is significantly non-white.
 We conclude that the model assumptions for the noise model are not appropriate for ARX and ARMAX.
 The whiteness test for the output error structure shows that the noise in the system is indeed non-white.
@@ -219,6 +219,6 @@ Finally, none of the models passes the statistical tests.
 Dependent on the objective of the identified model, we would go for the state space or the Box Jenkins model.
 The advantage of the state space model is, that it can directly be used for controller design or simulation.
 
-There are several possible explanation why we can not exactly model the system accurately using the methods above.
+There are several possible explanations why we can not exactly model the system accurately using the methods above.
 One such explanation is that the true system might be nonlinear and can therefore never be exactly modeled by the linear models used here.
 Further, we might have nasty noise on the signals being non zero-mean and/or dependent on time or other variables.
