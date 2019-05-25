@@ -1,0 +1,21 @@
+=== System Identication Exercises
+
+Exercises and report for the system identification course in winter term 18/19 at EPFL.
+
+==== Content
+. Nonparametric Methods (*report1*)
+.. Step response
+.. Auto correlation of a PRBS signal
+.. Impulse response by deconvolution method
+.. Impulse response by correlation approach
+.. Frequency domain identification using periodic input signal
+.. Frequency domain identification using random input signal
+. Parametric Methods (*report2*)
+.. Identification of a laser beam stabilizing system
+... FIR model identification
+... ARX model identification
+... State-space model identification
+.. Parametric identification of an active suspension system
+... Order estimation
+... Parametric identification
+... Model validation 
