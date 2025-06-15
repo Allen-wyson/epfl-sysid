@@ -18,7 +18,7 @@ In order to compute the estimate for the impulse response latexmath:[g(h)], one 
 For white noise latexmath:[g(h) = \frac{\hat{R}_{yu}(h)}{\hat{R}_{uu}(0)}], else if the input signal is not white numerical deconvolution using the following relation:
 [latexmath]
 +++++++++++
-$R_{yu}(h) = \sum\limits_{j=0}^{K-1} g(j) R_{uu}(h - j)$
+R_{yu}(h) = \sum\limits_{j=0}^{K-1} g(j) R_{uu}(h - j)
 +++++++++++
 In the above equations latexmath:[\hat{R}_{uu}] denote the estimated autocorrelation of the input signal and latexmath:[\hat{R}_{yu}] denotes the estimated cross-correlation between the input and output signal.
 
